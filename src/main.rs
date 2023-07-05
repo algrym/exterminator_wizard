@@ -6,6 +6,7 @@ use bevy::{
     },
     prelude::*,
 };
+use bevy::utils::tracing::Instrument;
 use bevy_ecs_ldtk::prelude::*;
 
 //  egrep '\t"levelIid"' assets/exterminator_wizard.ldtk | awk '{ print $2 }'
@@ -17,9 +18,12 @@ const LEVEL_IIDS: [&str; 4] = [
 ];
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>, windows: Query<&Window>) {
-    commands.spawn(Camera2dBundle::default());
+    let mut camera = Camera2dBundle::default();
+    camera.projection.scale /= 2.0;
+    commands.spawn(camera);
 
     let iids: HashSet<String> = LEVEL_IIDS.into_iter().map(|s| s.to_string()).collect();
+
     let window = windows.single();
     info!("Window size: {},{}", window.width(), window.height());
 
@@ -44,11 +48,10 @@ fn main() {
         .add_plugin(LdtkPlugin)
         .add_startup_system(setup)
         .insert_resource(LdtkSettings {
-            // By default, levels are just spawned at the origin of the world.
-            // This makes them spawn according to their location in LDtk
             level_spawn_behavior: LevelSpawnBehavior::UseWorldTranslation {
                 load_level_neighbors: true,
             },
+            set_clear_color: SetClearColor::FromLevelBackground,
             ..Default::default()
         })
         .run();
