@@ -1,11 +1,16 @@
 //! In this example we generate a new texture atlas (sprite sheet) from a folder containing
 //! individual sprites.
 
-use bevy::{asset::LoadState, prelude::*,
+use bevy::{
+    asset::LoadState,
     diagnostic::{
         FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin, SystemInformationDiagnosticsPlugin,
     },
+    prelude::*,
 };
+
+// How long should we pause between player frames?
+const PLAYER_ANIMATION_DURATION: f32 = 0.5;
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, States)]
 enum AppState {
@@ -15,23 +20,79 @@ enum AppState {
 }
 
 #[derive(Resource, Default)]
-struct RpgSpriteHandles {
+struct EwSpriteHandles {
     handles: Vec<HandleUntyped>,
 }
 
-fn load_textures(mut rpg_sprite_handles: ResMut<RpgSpriteHandles>, asset_server: Res<AssetServer>) {
+#[derive(Component)]
+struct SpriteAnimationIndices {
+    back_1: usize,
+    back_2: usize,
+    front_1: usize,
+    front_2: usize,
+    left_1: usize,
+    left_2: usize,
+    right_1: usize,
+    right_2: usize,
+}
+
+impl SpriteAnimationIndices {
+    pub fn new(prefix: &str, asset_server: Res<AssetServer>, texture_atlas: TextureAtlas) -> Self {
+        let sprite_name_to_index = |sprite_name: String| -> usize {
+            texture_atlas
+                .get_texture_index(&asset_server.get_handle(sprite_name))
+                .unwrap_or_default()
+        };
+
+        SpriteAnimationIndices {
+            back_1: sprite_name_to_index(format!("{prefix}_bk1.png")),
+            back_2: sprite_name_to_index(format!("{prefix}_bk2.png")),
+            front_1: sprite_name_to_index(format!("{prefix}_fr1.png")),
+            front_2: sprite_name_to_index(format!("{prefix}_fr2.png")),
+            left_1: sprite_name_to_index(format!("{prefix}_lf1.png")),
+            left_2: sprite_name_to_index(format!("{prefix}_lf2.png")),
+            right_1: sprite_name_to_index(format!("{prefix}_rt1.png")),
+            right_2: sprite_name_to_index(format!("{prefix}_rt2.png")),
+        }
+    }
+}
+
+fn animate_sprite(
+    time: Res<Time>,
+    mut query: Query<(
+        &SpriteAnimationIndices,
+        &mut AnimationTimer,
+        &mut TextureAtlasSprite,
+    )>,
+) {
+    for (indices, mut timer, mut sprite) in &mut query {
+        timer.tick(time.delta());
+        if timer.just_finished() {
+            sprite.index = if sprite.index == indices.front_1 {
+                indices.front_2
+            } else {
+                indices.front_1
+            };
+        }
+    }
+}
+
+#[derive(Component, Deref, DerefMut)]
+struct AnimationTimer(Timer);
+
+fn load_textures(mut ew_sprite_handles: ResMut<EwSpriteHandles>, asset_server: Res<AssetServer>) {
     // load multiple, individual sprites from a folder
-    rpg_sprite_handles.handles = asset_server.load_folder("sprites").unwrap();
+    ew_sprite_handles.handles = asset_server.load_folder("sprites").unwrap();
 }
 
 fn check_textures(
     mut next_state: ResMut<NextState<AppState>>,
-    rpg_sprite_handles: ResMut<RpgSpriteHandles>,
+    ew_sprite_handles: ResMut<EwSpriteHandles>,
     asset_server: Res<AssetServer>,
 ) {
     // Advance the `AppState` once all sprite handles have been loaded by the `AssetServer`
     if let LoadState::Loaded = asset_server
-        .get_group_load_state(rpg_sprite_handles.handles.iter().map(|handle| handle.id()))
+        .get_group_load_state(ew_sprite_handles.handles.iter().map(|handle| handle.id()))
     {
         next_state.set(AppState::Finished);
     }
@@ -39,14 +100,14 @@ fn check_textures(
 
 fn setup(
     mut commands: Commands,
-    rpg_sprite_handles: Res<RpgSpriteHandles>,
+    ew_sprite_handles: Res<EwSpriteHandles>,
     asset_server: Res<AssetServer>,
-    // mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut textures: ResMut<Assets<Image>>,
 ) {
     // Build a `TextureAtlas` using the individual sprites
     let mut texture_atlas_builder = TextureAtlasBuilder::default();
-    for handle in &rpg_sprite_handles.handles {
+    for handle in &ew_sprite_handles.handles {
         let handle = handle.typed_weak();
         let Some(texture) = textures.get(&handle) else {
             warn!("{:?} did not resolve to an `Image` asset.", asset_server.get_handle_path(handle));
@@ -57,12 +118,35 @@ fn setup(
     }
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
+    let texture_atlas_texture = texture_atlas.texture.clone();
+    let player_handle = asset_server.get_handle("sprites/amg1_fr1.png");
+    let player_index = texture_atlas.get_texture_index(&player_handle).unwrap();
+    let player_indices = SpriteAnimationIndices::new("sprites/amg1", asset_server, texture_atlas.clone());
+    let atlas_handle = texture_atlases.add(texture_atlas);
+
     commands.spawn(Camera2dBundle::default());
+
+    // draw a sprite from the atlas
+    commands.spawn((
+        SpriteSheetBundle {
+            transform: Transform {
+                translation: Vec3::new(150.0, 0.0, 0.0),
+                scale: Vec3::splat(3.0),
+                ..default()
+            },
+            sprite: TextureAtlasSprite::new(player_index),
+            texture_atlas: atlas_handle,
+            ..default()
+        },
+        player_indices,
+        AnimationTimer(Timer::from_seconds(PLAYER_ANIMATION_DURATION, TimerMode::Repeating)),
+    ));
+
     // draw the atlas itself
     commands.spawn(SpriteBundle {
-        texture: texture_atlas.texture,
+        texture: texture_atlas_texture,
         transform: Transform {
-            scale: Vec3::splat(0.5),
+            scale: Vec3::splat(1.0),
             ..default()
         },
         ..default()
@@ -71,7 +155,7 @@ fn setup(
 
 fn main() {
     App::new()
-        .init_resource::<RpgSpriteHandles>()
+        .init_resource::<EwSpriteHandles>()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest())) // prevents blurry sprites
         .add_plugins(SystemInformationDiagnosticsPlugin::default())
         .add_plugins(LogDiagnosticsPlugin::default())
@@ -79,6 +163,7 @@ fn main() {
         .add_state::<AppState>()
         .add_systems(OnEnter(AppState::Setup), load_textures)
         .add_systems(Update, check_textures.run_if(in_state(AppState::Setup)))
+        .add_systems(Update, animate_sprite)
         .add_systems(OnEnter(AppState::Finished), setup)
         .run();
 }
