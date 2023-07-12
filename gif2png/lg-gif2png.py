@@ -5,18 +5,18 @@
 import glob
 from PIL import Image
 
-# Find all gifs which have an underscore in the middle and save the prefix names
+# Find all the gifs in the source directory
 prefixes = set()
 for filename in glob.glob("last-guardian-sprites/*.gif"):
     sprite = Image.new("RGBA", (32, 32))
     name, _ = filename.split(".")
 
-    src_img = name + ".gif"
-    img = Image.open(src_img)
-
+    img = Image.open(filename)
     sprite.paste(img, (0, 0))
 
-    # Set transparency of composite image
+    # Change alpha value of white pixels to 0
+    # Snippet found at:
+    # https://stackoverflow.com/questions/765736/how-to-use-pil-to-make-all-white-pixels-transparent
     pixdata = sprite.load()
     width, height = sprite.size
     for y in range(height):
