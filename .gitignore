@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/rust,pycharm,macos
-# Edit at https://www.toptal.com/developers/gitignore?templates=rust,pycharm,macos
+# Created by https://www.toptal.com/developers/gitignore/api/macos,pycharm,rust,venv
+# Edit at https://www.toptal.com/developers/gitignore?templates=macos,pycharm,rust,venv
 
 ### macOS ###
 # General
@@ -8,8 +8,7 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
-
+Icon
 
 # Thumbnails
 ._*
@@ -163,7 +162,18 @@ Cargo.lock
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 
-# End of https://www.toptal.com/developers/gitignore/api/rust,pycharm,macos
+### venv ###
+# Virtualenv
+# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+.Python
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ib64
+[Ll]ocal
+[Ss]cripts
+pyvenv.cfg
+.venv
+pip-selfcheck.json
 
-# Ignore backups
-**/*~
+# End of https://www.toptal.com/developers/gitignore/api/macos,pycharm,rust,venv
