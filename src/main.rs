@@ -19,6 +19,9 @@ enum AppState {
     Finished,
 }
 
+#[derive(Component)]
+struct Player {}
+
 #[derive(Resource, Default)]
 struct EwSpriteHandles {
     handles: Vec<HandleUntyped>,
@@ -77,6 +80,30 @@ fn animate_sprite(
     }
 }
 
+fn player_movement_system(
+    _time: Res<Time>,
+    keyboard_input: Res<Input<KeyCode>>,
+    mut query: Query<(&Player, &mut Transform)>,
+) {
+    for (_, mut player_transform) in query.iter_mut() {
+        if keyboard_input.pressed(KeyCode::Left) {
+            player_transform.translation.x -= 1.0;
+        }
+
+        if keyboard_input.pressed(KeyCode::Right) {
+            player_transform.translation.x += 1.0;
+        }
+
+        if keyboard_input.pressed(KeyCode::Up) {
+            player_transform.translation.y += 1.0;
+        }
+
+        if keyboard_input.pressed(KeyCode::Down) {
+            player_transform.translation.y -= 1.0;
+        }
+    }
+}
+
 #[derive(Component, Deref, DerefMut)]
 struct AnimationTimer(Timer);
 
@@ -118,9 +145,6 @@ fn setup(
     }
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
-    let texture_atlas_texture = texture_atlas.texture.clone();
-    let player_handle = asset_server.get_handle("sprites/amg1_fr1.png");
-    let player_index = texture_atlas.get_texture_index(&player_handle).unwrap();
     let player_indices = SpriteAnimationIndices::new("sprites/amg1", asset_server, texture_atlas.clone());
     let atlas_handle = texture_atlases.add(texture_atlas);
 
@@ -134,23 +158,14 @@ fn setup(
                 scale: Vec3::splat(3.0),
                 ..default()
             },
-            sprite: TextureAtlasSprite::new(player_index),
+            sprite: TextureAtlasSprite::new(player_indices.front_1),
             texture_atlas: atlas_handle,
             ..default()
         },
+        Player {},
         player_indices,
         AnimationTimer(Timer::from_seconds(PLAYER_ANIMATION_DURATION, TimerMode::Repeating)),
     ));
-
-    // draw the atlas itself
-    commands.spawn(SpriteBundle {
-        texture: texture_atlas_texture,
-        transform: Transform {
-            scale: Vec3::splat(1.0),
-            ..default()
-        },
-        ..default()
-    });
 }
 
 fn main() {
@@ -164,6 +179,7 @@ fn main() {
         .add_systems(OnEnter(AppState::Setup), load_textures)
         .add_systems(Update, check_textures.run_if(in_state(AppState::Setup)))
         .add_systems(Update, animate_sprite)
+        .add_systems(Update, player_movement_system)
         .add_systems(OnEnter(AppState::Finished), setup)
         .run();
 }
