@@ -22,6 +22,19 @@ enum AppState {
 #[derive(Component)]
 struct Player {}
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
+enum Facing {
+    Up,
+    Down,
+    Left,
+    Right
+}
+
+#[derive(Component)]
+struct SpriteFacing {
+    facing: Facing,
+}
+
 #[derive(Resource, Default)]
 struct EwSpriteHandles {
     handles: Vec<HandleUntyped>,
@@ -66,16 +79,38 @@ fn animate_sprite(
         &SpriteAnimationIndices,
         &mut AnimationTimer,
         &mut TextureAtlasSprite,
+        &SpriteFacing,
     )>,
 ) {
-    for (indices, mut timer, mut sprite) in &mut query {
+    for (indices, mut timer, mut sprite, sprite_facing) in &mut query {
         timer.tick(time.delta());
         if timer.just_finished() {
-            sprite.index = if sprite.index == indices.front_1 {
-                indices.front_2
-            } else {
-                indices.front_1
-            };
+            match sprite_facing.facing {
+                Facing::Down =>
+                    sprite.index = if sprite.index != indices.front_2 {
+                        indices.front_2
+                    } else {
+                        indices.front_1
+                    },
+                Facing::Up =>
+                    sprite.index = if sprite.index != indices.back_2 {
+                        indices.back_2
+                    } else {
+                        indices.back_1
+                    },
+                Facing::Left =>
+                    sprite.index = if sprite.index != indices.left_2 {
+                        indices.left_2
+                    } else {
+                        indices.left_1
+                    },
+                Facing::Right =>
+                    sprite.index = if sprite.index != indices.right_2 {
+                        indices.right_2
+                    } else {
+                        indices.right_1
+                    },
+            }
         }
     }
 }
@@ -83,23 +118,27 @@ fn animate_sprite(
 fn player_movement_system(
     _time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(&Player, &mut Transform)>,
+    mut query: Query<(&Player, &mut SpriteFacing, &mut Transform)>,
 ) {
-    for (_, mut player_transform) in query.iter_mut() {
+    for (_player, mut player_facing, mut player_transform) in query.iter_mut() {
         if keyboard_input.pressed(KeyCode::Left) {
             player_transform.translation.x -= 1.0;
+            player_facing.facing = Facing::Left;
         }
 
         if keyboard_input.pressed(KeyCode::Right) {
             player_transform.translation.x += 1.0;
+            player_facing.facing = Facing::Right;
         }
 
         if keyboard_input.pressed(KeyCode::Up) {
             player_transform.translation.y += 1.0;
+            player_facing.facing = Facing::Up;
         }
 
         if keyboard_input.pressed(KeyCode::Down) {
             player_transform.translation.y -= 1.0;
+            player_facing.facing = Facing::Down;
         }
     }
 }
@@ -163,6 +202,7 @@ fn setup(
             ..default()
         },
         Player {},
+        SpriteFacing { facing: Facing::Down },
         player_indices,
         AnimationTimer(Timer::from_seconds(PLAYER_ANIMATION_DURATION, TimerMode::Repeating)),
     ));
