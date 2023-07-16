@@ -14,6 +14,9 @@ use bevy::{
 // How long should we pause between player frames?
 const PLAYER_ANIMATION_DURATION: f32 = 0.25;
 
+// How large should sprites be scaled to?
+const SPRITE_SCALE: f32 = 1.5;
+
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, States)]
 enum AppState {
     #[default]
@@ -223,7 +226,7 @@ fn setup(
         SpriteSheetBundle {
             transform: Transform {
                 translation: Vec3::new(150.0, 0.0, 0.0),
-                scale: Vec3::splat(3.0),
+                scale: Vec3::splat(SPRITE_SCALE),
                 ..default()
             },
             sprite: TextureAtlasSprite::new(player_indices.front[0]),
