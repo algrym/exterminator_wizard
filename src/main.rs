@@ -1,6 +1,8 @@
 //! In this example we generate a new texture atlas (sprite sheet) from a folder containing
 //! individual sprites.
 
+use std::vec::Vec;
+
 use bevy::{
     asset::LoadState,
     diagnostic::{
@@ -31,8 +33,9 @@ enum Facing {
 }
 
 #[derive(Component)]
-struct SpriteFacing {
+struct SpriteState {
     facing: Facing,
+    animation_index: usize,
 }
 
 #[derive(Resource, Default)]
@@ -42,14 +45,10 @@ struct EwSpriteHandles {
 
 #[derive(Component)]
 struct SpriteAnimationIndices {
-    back_1: usize,
-    back_2: usize,
-    front_1: usize,
-    front_2: usize,
-    left_1: usize,
-    left_2: usize,
-    right_1: usize,
-    right_2: usize,
+    back: Vec<usize>,
+    front: Vec<usize>,
+    left: Vec<usize>,
+    right: Vec<usize>,
 }
 
 impl SpriteAnimationIndices {
@@ -61,88 +60,109 @@ impl SpriteAnimationIndices {
         };
 
         SpriteAnimationIndices {
-            back_1: sprite_name_to_index(format!("{prefix}_bk1.png")),
-            back_2: sprite_name_to_index(format!("{prefix}_bk2.png")),
-            front_1: sprite_name_to_index(format!("{prefix}_fr1.png")),
-            front_2: sprite_name_to_index(format!("{prefix}_fr2.png")),
-            left_1: sprite_name_to_index(format!("{prefix}_lf1.png")),
-            left_2: sprite_name_to_index(format!("{prefix}_lf2.png")),
-            right_1: sprite_name_to_index(format!("{prefix}_rt1.png")),
-            right_2: sprite_name_to_index(format!("{prefix}_rt2.png")),
+            back: vec![
+                sprite_name_to_index(format!("{prefix}_bk1.png")),
+                sprite_name_to_index(format!("{prefix}_bk2.png")),
+            ],
+            front: vec![
+                sprite_name_to_index(format!("{prefix}_fr1.png")),
+                sprite_name_to_index(format!("{prefix}_fr2.png")),
+            ],
+            left: vec![
+                sprite_name_to_index(format!("{prefix}_lf1.png")),
+                sprite_name_to_index(format!("{prefix}_lf2.png")),
+            ],
+            right: vec![
+                sprite_name_to_index(format!("{prefix}_rt1.png")),
+                sprite_name_to_index(format!("{prefix}_rt2.png")),
+            ],
         }
     }
 }
 
 fn animate_sprite(
-    time: Res<Time>,
     mut query: Query<(
         &SpriteAnimationIndices,
-        &mut AnimationTimer,
+        &AnimationTimer,
         &mut TextureAtlasSprite,
-        &SpriteFacing,
+        &mut SpriteState,
     )>,
 ) {
-    for (indices, mut timer, mut sprite, sprite_facing) in &mut query {
-        timer.tick(time.delta());
-        if timer.just_finished() {
-            match sprite_facing.facing {
-                Facing::Down => {
-                    sprite.index = if sprite.index != indices.front_2 {
-                        indices.front_2
-                    } else {
-                        indices.front_1
+    for (indices, timer, mut sprite, mut sprite_state) in &mut query {
+        match sprite_state.facing {
+            Facing::Down => {
+                if timer.just_finished() {
+                    sprite_state.animation_index += 1;
+                    if sprite_state.animation_index >= indices.front.len() {
+                        sprite_state.animation_index = 0;
                     }
                 }
-                Facing::Up => {
-                    sprite.index = if sprite.index != indices.back_2 {
-                        indices.back_2
-                    } else {
-                        indices.back_1
+                sprite.index = indices.front[sprite_state.animation_index];
+            }
+            Facing::Up => {
+                if timer.just_finished() {
+                    sprite_state.animation_index += 1;
+                    if sprite_state.animation_index >= indices.back.len() {
+                        sprite_state.animation_index = 0;
                     }
                 }
-                Facing::Left => {
-                    sprite.index = if sprite.index != indices.left_2 {
-                        indices.left_2
-                    } else {
-                        indices.left_1
+                sprite.index = indices.back[sprite_state.animation_index];
+            }
+            Facing::Left => {
+                if timer.just_finished() {
+                    sprite_state.animation_index += 1;
+                    if sprite_state.animation_index >= indices.left.len() {
+                        sprite_state.animation_index = 0;
                     }
                 }
-                Facing::Right => {
-                    sprite.index = if sprite.index != indices.right_2 {
-                        indices.right_2
-                    } else {
-                        indices.right_1
+                sprite.index = indices.left[sprite_state.animation_index];
+            }
+            Facing::Right => {
+                if timer.just_finished() {
+                    sprite_state.animation_index += 1;
+                    if sprite_state.animation_index >= indices.right.len() {
+                        sprite_state.animation_index = 0;
                     }
                 }
+                sprite.index = indices.right[sprite_state.animation_index];
             }
         }
     }
 }
 
 fn player_movement_system(
-    _time: Res<Time>,
+    time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(&Player, &mut SpriteFacing, &mut Transform)>,
+    mut query: Query<(
+        &Player,
+        &mut SpriteState,
+        &mut AnimationTimer,
+        &mut Transform,
+    )>,
 ) {
-    for (_player, mut player_facing, mut player_transform) in query.iter_mut() {
+    for (_player, mut player_facing, mut timer, mut player_transform) in query.iter_mut() {
         if keyboard_input.pressed(KeyCode::Left) {
             player_transform.translation.x -= 1.0;
             player_facing.facing = Facing::Left;
+            timer.tick(time.delta());
         }
 
         if keyboard_input.pressed(KeyCode::Right) {
             player_transform.translation.x += 1.0;
             player_facing.facing = Facing::Right;
+            timer.tick(time.delta());
         }
 
         if keyboard_input.pressed(KeyCode::Up) {
             player_transform.translation.y += 1.0;
             player_facing.facing = Facing::Up;
+            timer.tick(time.delta());
         }
 
         if keyboard_input.pressed(KeyCode::Down) {
             player_transform.translation.y -= 1.0;
             player_facing.facing = Facing::Down;
+            timer.tick(time.delta());
         }
     }
 }
@@ -202,13 +222,14 @@ fn setup(
                 scale: Vec3::splat(3.0),
                 ..default()
             },
-            sprite: TextureAtlasSprite::new(player_indices.front_1),
+            sprite: TextureAtlasSprite::new(player_indices.front[0]),
             texture_atlas: atlas_handle,
             ..default()
         },
         Player {},
-        SpriteFacing {
+        SpriteState {
             facing: Facing::Down,
+            animation_index: 0,
         },
         player_indices,
         AnimationTimer(Timer::from_seconds(
