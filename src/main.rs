@@ -141,25 +141,29 @@ fn player_movement_system(
     )>,
 ) {
     for (_player, mut player_facing, mut timer, mut player_transform) in query.iter_mut() {
-        if keyboard_input.pressed(KeyCode::Left) {
+        if keyboard_input.pressed(KeyCode::Left) ||
+            keyboard_input.pressed(KeyCode::A) {
             player_transform.translation.x -= 1.0;
             player_facing.facing = Facing::Left;
             timer.tick(time.delta());
         }
 
-        if keyboard_input.pressed(KeyCode::Right) {
+        if keyboard_input.pressed(KeyCode::Right) ||
+            keyboard_input.pressed(KeyCode::D) {
             player_transform.translation.x += 1.0;
             player_facing.facing = Facing::Right;
             timer.tick(time.delta());
         }
 
-        if keyboard_input.pressed(KeyCode::Up) {
+        if keyboard_input.pressed(KeyCode::Up) ||
+            keyboard_input.pressed(KeyCode::W) {
             player_transform.translation.y += 1.0;
             player_facing.facing = Facing::Up;
             timer.tick(time.delta());
         }
 
-        if keyboard_input.pressed(KeyCode::Down) {
+        if keyboard_input.pressed(KeyCode::Down) ||
+            keyboard_input.pressed(KeyCode::S) {
             player_transform.translation.y -= 1.0;
             player_facing.facing = Facing::Down;
             timer.tick(time.delta());
