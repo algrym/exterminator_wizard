@@ -10,7 +10,7 @@ use bevy::{
 };
 
 // How long should we pause between player frames?
-const PLAYER_ANIMATION_DURATION: f32 = 0.5;
+const PLAYER_ANIMATION_DURATION: f32 = 0.25;
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, States)]
 enum AppState {
@@ -27,7 +27,7 @@ enum Facing {
     Up,
     Down,
     Left,
-    Right
+    Right,
 }
 
 #[derive(Component)]
@@ -86,30 +86,34 @@ fn animate_sprite(
         timer.tick(time.delta());
         if timer.just_finished() {
             match sprite_facing.facing {
-                Facing::Down =>
+                Facing::Down => {
                     sprite.index = if sprite.index != indices.front_2 {
                         indices.front_2
                     } else {
                         indices.front_1
-                    },
-                Facing::Up =>
+                    }
+                }
+                Facing::Up => {
                     sprite.index = if sprite.index != indices.back_2 {
                         indices.back_2
                     } else {
                         indices.back_1
-                    },
-                Facing::Left =>
+                    }
+                }
+                Facing::Left => {
                     sprite.index = if sprite.index != indices.left_2 {
                         indices.left_2
                     } else {
                         indices.left_1
-                    },
-                Facing::Right =>
+                    }
+                }
+                Facing::Right => {
                     sprite.index = if sprite.index != indices.right_2 {
                         indices.right_2
                     } else {
                         indices.right_1
-                    },
+                    }
+                }
             }
         }
     }
@@ -184,7 +188,8 @@ fn setup(
     }
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
-    let player_indices = SpriteAnimationIndices::new("sprites/amg1", asset_server, texture_atlas.clone());
+    let player_indices =
+        SpriteAnimationIndices::new("sprites/amg1", asset_server, texture_atlas.clone());
     let atlas_handle = texture_atlases.add(texture_atlas);
 
     commands.spawn(Camera2dBundle::default());
@@ -202,9 +207,14 @@ fn setup(
             ..default()
         },
         Player {},
-        SpriteFacing { facing: Facing::Down },
+        SpriteFacing {
+            facing: Facing::Down,
+        },
         player_indices,
-        AnimationTimer(Timer::from_seconds(PLAYER_ANIMATION_DURATION, TimerMode::Repeating)),
+        AnimationTimer(Timer::from_seconds(
+            PLAYER_ANIMATION_DURATION,
+            TimerMode::Repeating,
+        )),
     ));
 }
 
@@ -212,9 +222,9 @@ fn main() {
     App::new()
         .init_resource::<EwSpriteHandles>()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest())) // prevents blurry sprites
-        .add_plugins(SystemInformationDiagnosticsPlugin::default())
+        .add_plugins(SystemInformationDiagnosticsPlugin)
         .add_plugins(LogDiagnosticsPlugin::default())
-        .add_plugins(FrameTimeDiagnosticsPlugin::default())
+        .add_plugins(FrameTimeDiagnosticsPlugin)
         .add_state::<AppState>()
         .add_systems(OnEnter(AppState::Setup), load_textures)
         .add_systems(Update, check_textures.run_if(in_state(AppState::Setup)))
