@@ -14,6 +14,9 @@ use bevy::{
 // How long should we pause between player frames?
 const PLAYER_ANIMATION_DURATION: f32 = 0.25;
 
+// How fast should the player move per tick?
+const PLAYER_MOVEDMENT_SPEED: f32 = 100.0;
+
 // How large should sprites be scaled to?
 const SPRITE_SCALE: f32 = 1.5;
 
@@ -146,28 +149,28 @@ fn player_movement_system(
     for (_player, mut player_facing, mut timer, mut player_transform) in query.iter_mut() {
         if keyboard_input.pressed(KeyCode::Left) ||
             keyboard_input.pressed(KeyCode::A) {
-            player_transform.translation.x -= 1.0;
+            player_transform.translation.x -= PLAYER_MOVEDMENT_SPEED * time.delta_seconds();
             player_facing.facing = Facing::Left;
             timer.tick(time.delta());
         }
 
         if keyboard_input.pressed(KeyCode::Right) ||
             keyboard_input.pressed(KeyCode::D) {
-            player_transform.translation.x += 1.0;
+            player_transform.translation.x += PLAYER_MOVEDMENT_SPEED * time.delta_seconds();
             player_facing.facing = Facing::Right;
             timer.tick(time.delta());
         }
 
         if keyboard_input.pressed(KeyCode::Up) ||
             keyboard_input.pressed(KeyCode::W) {
-            player_transform.translation.y += 1.0;
+            player_transform.translation.y += PLAYER_MOVEDMENT_SPEED * time.delta_seconds();
             player_facing.facing = Facing::Up;
             timer.tick(time.delta());
         }
 
         if keyboard_input.pressed(KeyCode::Down) ||
             keyboard_input.pressed(KeyCode::S) {
-            player_transform.translation.y -= 1.0;
+            player_transform.translation.y -= PLAYER_MOVEDMENT_SPEED * time.delta_seconds();
             player_facing.facing = Facing::Down;
             timer.tick(time.delta());
         }
