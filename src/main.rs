@@ -10,12 +10,13 @@ use bevy::{
     },
     prelude::*,
 };
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 // How long should we pause between player frames?
 const PLAYER_ANIMATION_DURATION: f32 = 0.25;
 
 // How fast should the player move per tick?
-const PLAYER_MOVEDMENT_SPEED: f32 = 100.0;
+const PLAYER_MOVEMENT_SPEED: f32 = 100.0;
 
 // How large should sprites be scaled to?
 const SPRITE_SCALE: f32 = 1.5;
@@ -147,30 +148,26 @@ fn player_movement_system(
     )>,
 ) {
     for (_player, mut player_facing, mut timer, mut player_transform) in query.iter_mut() {
-        if keyboard_input.pressed(KeyCode::Left) ||
-            keyboard_input.pressed(KeyCode::A) {
-            player_transform.translation.x -= PLAYER_MOVEDMENT_SPEED * time.delta_seconds();
+        if keyboard_input.pressed(KeyCode::Left) || keyboard_input.pressed(KeyCode::A) {
+            player_transform.translation.x -= PLAYER_MOVEMENT_SPEED * time.delta_seconds();
             player_facing.facing = Facing::Left;
             timer.tick(time.delta());
         }
 
-        if keyboard_input.pressed(KeyCode::Right) ||
-            keyboard_input.pressed(KeyCode::D) {
-            player_transform.translation.x += PLAYER_MOVEDMENT_SPEED * time.delta_seconds();
+        if keyboard_input.pressed(KeyCode::Right) || keyboard_input.pressed(KeyCode::D) {
+            player_transform.translation.x += PLAYER_MOVEMENT_SPEED * time.delta_seconds();
             player_facing.facing = Facing::Right;
             timer.tick(time.delta());
         }
 
-        if keyboard_input.pressed(KeyCode::Up) ||
-            keyboard_input.pressed(KeyCode::W) {
-            player_transform.translation.y += PLAYER_MOVEDMENT_SPEED * time.delta_seconds();
+        if keyboard_input.pressed(KeyCode::Up) || keyboard_input.pressed(KeyCode::W) {
+            player_transform.translation.y += PLAYER_MOVEMENT_SPEED * time.delta_seconds();
             player_facing.facing = Facing::Up;
             timer.tick(time.delta());
         }
 
-        if keyboard_input.pressed(KeyCode::Down) ||
-            keyboard_input.pressed(KeyCode::S) {
-            player_transform.translation.y -= PLAYER_MOVEDMENT_SPEED * time.delta_seconds();
+        if keyboard_input.pressed(KeyCode::Down) || keyboard_input.pressed(KeyCode::S) {
+            player_transform.translation.y -= PLAYER_MOVEMENT_SPEED * time.delta_seconds();
             player_facing.facing = Facing::Down;
             timer.tick(time.delta());
         }
@@ -224,7 +221,7 @@ fn setup(
 
     commands.spawn(Camera2dBundle::default());
 
-    // draw a sprite from the atlas
+    // setup player sprite from the atlas
     commands.spawn((
         SpriteSheetBundle {
             transform: Transform {
@@ -237,6 +234,7 @@ fn setup(
             ..default()
         },
         Player {},
+        Name::new("Player"),
         SpriteState {
             facing: Facing::Down,
             animation_index: 0,
@@ -256,6 +254,7 @@ fn main() {
         .add_plugins(SystemInformationDiagnosticsPlugin)
         .add_plugins(LogDiagnosticsPlugin::default())
         .add_plugins(FrameTimeDiagnosticsPlugin)
+        .add_plugins(WorldInspectorPlugin::new())
         .add_state::<AppState>()
         .add_systems(OnEnter(AppState::Setup), load_textures)
         .add_systems(Update, check_textures.run_if(in_state(AppState::Setup)))
