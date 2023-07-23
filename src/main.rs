@@ -12,6 +12,9 @@ use bevy::{
 };
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
+// What sprites should we use for the player?
+const PLAYER_SPRITE_NAME: &str = "sprites/amg1";
+
 // How long should we pause between player frames?
 const PLAYER_ANIMATION_DURATION: f32 = 0.25;
 
@@ -140,36 +143,31 @@ fn animate_sprite(
 fn player_movement_system(
     time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(
-        &Player,
-        &mut SpriteState,
-        &mut AnimationTimer,
-        &mut Transform,
-    )>,
+    mut query: Query<(&mut SpriteState, &mut AnimationTimer, &mut Transform), With<Player>>,
 ) {
-    for (_player, mut player_facing, mut timer, mut player_transform) in query.iter_mut() {
+    for (mut player_facing, mut player_animation_timer, mut player_transform) in query.iter_mut() {
         if keyboard_input.pressed(KeyCode::Left) || keyboard_input.pressed(KeyCode::A) {
             player_transform.translation.x -= PLAYER_MOVEMENT_SPEED * time.delta_seconds();
             player_facing.facing = Facing::Left;
-            timer.tick(time.delta());
+            player_animation_timer.tick(time.delta());
         }
 
         if keyboard_input.pressed(KeyCode::Right) || keyboard_input.pressed(KeyCode::D) {
             player_transform.translation.x += PLAYER_MOVEMENT_SPEED * time.delta_seconds();
             player_facing.facing = Facing::Right;
-            timer.tick(time.delta());
+            player_animation_timer.tick(time.delta());
         }
 
         if keyboard_input.pressed(KeyCode::Up) || keyboard_input.pressed(KeyCode::W) {
             player_transform.translation.y += PLAYER_MOVEMENT_SPEED * time.delta_seconds();
             player_facing.facing = Facing::Up;
-            timer.tick(time.delta());
+            player_animation_timer.tick(time.delta());
         }
 
         if keyboard_input.pressed(KeyCode::Down) || keyboard_input.pressed(KeyCode::S) {
             player_transform.translation.y -= PLAYER_MOVEMENT_SPEED * time.delta_seconds();
             player_facing.facing = Facing::Down;
-            timer.tick(time.delta());
+            player_animation_timer.tick(time.delta());
         }
     }
 }
@@ -216,7 +214,7 @@ fn setup(
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
     let player_indices =
-        SpriteAnimationIndices::new("sprites/amg1", asset_server, texture_atlas.clone());
+        SpriteAnimationIndices::new(PLAYER_SPRITE_NAME, asset_server, texture_atlas.clone());
     let atlas_handle = texture_atlases.add(texture_atlas);
 
     commands.spawn(Camera2dBundle::default());
@@ -225,7 +223,6 @@ fn setup(
     commands.spawn((
         SpriteSheetBundle {
             transform: Transform {
-                translation: Vec3::new(150.0, 0.0, 0.0),
                 scale: Vec3::splat(SPRITE_SCALE),
                 ..default()
             },
