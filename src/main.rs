@@ -31,18 +31,19 @@ enum AppState {
     Finished,
 }
 
-#[derive(Component)]
+#[derive(Reflect, Component)]
 struct Player {}
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
+#[derive(Reflect, Default, Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
 enum Facing {
     Up,
+    #[default]
     Down,
     Left,
     Right,
 }
 
-#[derive(Component)]
+#[derive(Default, Reflect, Component)]
 struct SpriteState {
     facing: Facing,
     animation_index: usize,
@@ -53,7 +54,7 @@ struct EwSpriteHandles {
     handles: Vec<HandleUntyped>,
 }
 
-#[derive(Component)]
+#[derive(Reflect, Debug, Component)]
 struct SpriteAnimationIndices {
     back: Vec<usize>,
     front: Vec<usize>,
@@ -172,7 +173,7 @@ fn player_movement_system(
     }
 }
 
-#[derive(Component, Deref, DerefMut)]
+#[derive(Reflect, Component, Deref, DerefMut)]
 struct AnimationTimer(Timer);
 
 fn load_textures(mut ew_sprite_handles: ResMut<EwSpriteHandles>, asset_server: Res<AssetServer>) {
@@ -233,8 +234,7 @@ fn setup(
         Player {},
         Name::new("Player"),
         SpriteState {
-            facing: Facing::Down,
-            animation_index: 0,
+            ..Default::default()
         },
         player_indices,
         AnimationTimer(Timer::from_seconds(
@@ -247,7 +247,28 @@ fn setup(
 fn main() {
     App::new()
         .init_resource::<EwSpriteHandles>()
-        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest())) // prevents blurry sprites
+        // bevy_inspector_egui wants local objects registered
+        .register_type::<AnimationTimer>()
+        .register_type::<Facing>()
+        .register_type::<Player>()
+        .register_type::<SpriteState>()
+        .register_type::<SpriteAnimationIndices>()
+        .add_plugins(
+            DefaultPlugins
+                .set(ImagePlugin::default_nearest()) // prevents blurry sprites
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        fit_canvas_to_parent: true,
+                        prevent_default_event_handling: false, // don't hijack keyboard shortcuts like F5, F6, F12, Ctrl+R etc.
+                        title: format!(
+                            "Exterminator Wizard v{} - ajw@ajw.io",
+                            env!("CARGO_PKG_VERSION")
+                        ),
+                        ..default()
+                    }),
+                    ..default()
+                }),
+        )
         .add_plugins(SystemInformationDiagnosticsPlugin)
         .add_plugins(LogDiagnosticsPlugin::default())
         .add_plugins(FrameTimeDiagnosticsPlugin)
