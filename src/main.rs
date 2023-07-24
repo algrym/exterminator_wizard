@@ -27,8 +27,8 @@ const SPRITE_SCALE: f32 = 1.5;
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, States)]
 enum AppState {
     #[default]
-    Setup,
-    Finished,
+    LoadingStart,
+    LoadingFinished,
 }
 
 #[derive(Reflect, Component)]
@@ -190,7 +190,7 @@ fn check_textures(
     if let LoadState::Loaded = asset_server
         .get_group_load_state(ew_sprite_handles.handles.iter().map(|handle| handle.id()))
     {
-        next_state.set(AppState::Finished);
+        next_state.set(AppState::LoadingFinished);
     }
 }
 
@@ -274,10 +274,10 @@ fn main() {
         .add_plugins(FrameTimeDiagnosticsPlugin)
         .add_plugins(WorldInspectorPlugin::new())
         .add_state::<AppState>()
-        .add_systems(OnEnter(AppState::Setup), load_textures)
-        .add_systems(Update, check_textures.run_if(in_state(AppState::Setup)))
+        .add_systems(OnEnter(AppState::LoadingStart), load_textures)
+        .add_systems(Update, check_textures.run_if(in_state(AppState::LoadingStart)))
         .add_systems(Update, animate_sprite)
         .add_systems(Update, player_movement_system)
-        .add_systems(OnEnter(AppState::Finished), setup)
+        .add_systems(OnEnter(AppState::LoadingFinished), setup)
         .run();
 }
