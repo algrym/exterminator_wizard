@@ -1,6 +1,3 @@
-//! In this example we generate a new texture atlas (sprite sheet) from a folder containing
-//! individual sprites.
-
 use std::vec::Vec;
 
 use bevy::{
@@ -10,10 +7,16 @@ use bevy::{
     },
     prelude::*,
 };
+use bevy_ecs_tilemap::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+
+mod helpers;
 
 // What sprites should we use for the player?
 const PLAYER_SPRITE_NAME: &str = "sprites/amg1";
+
+// What is the filename of the map to load?
+const MAP_FILENAME: &str = "map.tmx";
 
 // How long should we pause between player frames?
 const PLAYER_ANIMATION_DURATION: f32 = 0.25;
@@ -213,6 +216,18 @@ fn setup(
         texture_atlas_builder.add_texture(handle, texture);
     }
 
+    // setup the map
+    let map_handle: Handle<helpers::tiled::TiledMap> = asset_server.load(MAP_FILENAME);
+
+    commands.spawn(helpers::tiled::TiledMapBundle {
+        tiled_map: map_handle,
+        transform: Transform {
+            scale: Vec3::splat(SPRITE_SCALE),
+            ..default()
+        },
+        ..Default::default()
+    });
+
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
     let player_indices =
         SpriteAnimationIndices::new(PLAYER_SPRITE_NAME, asset_server, texture_atlas.clone());
@@ -224,6 +239,7 @@ fn setup(
     commands.spawn((
         SpriteSheetBundle {
             transform: Transform {
+                translation: Vec3::new(0.0, 0.0, 1.0),
                 scale: Vec3::splat(SPRITE_SCALE),
                 ..default()
             },
@@ -279,5 +295,7 @@ fn main() {
         .add_systems(Update, animate_sprite)
         .add_systems(Update, player_movement_system)
         .add_systems(OnEnter(AppState::LoadingFinished), setup)
+        .add_plugins(TilemapPlugin)
+        .add_plugins(helpers::tiled::TiledMapPlugin)
         .run();
 }

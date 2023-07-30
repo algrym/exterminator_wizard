@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" name="roguelikeSheet" tilewidth="16" tileheight="16" spacing="1" tilecount="1767" columns="57">
+  <image source="roguelikeSheet_magenta.png" trans="ff00ff" width="968" height="526"/>
+  <wangsets>
+   <wangset name="GrassGreenPlain" type="mixed" tile="-1">
+    <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   </wangset>
+  </wangsets>
+ </tileset>
+ <layer id="1" name="Tile Layer 1" width="10" height="10">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,916,916,916,916,916,0,0,0,
+0,916,916,916,916,916,916,916,916,0,
+0,916,916,916,916,916,916,916,916,0,
+0,916,916,916,916,916,916,916,916,0,
+0,916,916,916,916,916,916,916,916,0,
+0,0,0,916,916,916,916,916,0,0,
+0,0,0,0,0,916,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+</map>
