@@ -1,5 +1,6 @@
 use std::vec::Vec;
 
+use bevy::input::mouse::MouseWheel;
 use bevy::{
     asset::LoadState,
     diagnostic::{
@@ -25,7 +26,14 @@ const PLAYER_ANIMATION_DURATION: f32 = 0.25;
 const PLAYER_MOVEMENT_SPEED: f32 = 100.0;
 
 // How large should sprites be scaled to?
-const SPRITE_SCALE: f32 = 1.5;
+const SPRITE_SCALE: f32 = 0.5;
+
+// How large are scroll wheel movements?
+const MOUSE_SCROLL_SCALE_PIXEL: f32 = 0.01;
+
+// What limits on scale?
+const ORTHO_SCALE_MIN: f32 = 0.25;
+const ORTHO_SCALE_MAX: f32 = 1.75;
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, States)]
 enum AppState {
@@ -197,6 +205,35 @@ fn check_textures(
     }
 }
 
+fn scroll_events(
+    mut scroll_evr: EventReader<MouseWheel>,
+    mut query: Query<&mut OrthographicProjection, With<Camera>>,
+) {
+    use bevy::input::mouse::MouseScrollUnit;
+    for ev in scroll_evr.iter() {
+        for mut ortho in query.iter_mut() {
+            match ev.unit {
+                MouseScrollUnit::Line => {
+                    info!(
+                        "Scroll (line units): vertical: {}, horizontal: {}",
+                        ev.y, ev.x
+                    );
+                    ortho.scale += ev.y;
+                }
+                MouseScrollUnit::Pixel => {
+                    info!(
+                        "Scroll (pixel units): vertical: {}, horizontal: {}, scale: {}",
+                        ev.y, ev.x, ortho.scale,
+                    );
+                    ortho.scale += ev.y * MOUSE_SCROLL_SCALE_PIXEL;
+                }
+            }
+
+            ortho.scale = ortho.scale.clamp(ORTHO_SCALE_MIN, ORTHO_SCALE_MAX);
+        }
+    }
+}
+
 fn setup(
     mut commands: Commands,
     ew_sprite_handles: Res<EwSpriteHandles>,
@@ -291,9 +328,13 @@ fn main() {
         .add_plugins(WorldInspectorPlugin::new())
         .add_state::<AppState>()
         .add_systems(OnEnter(AppState::LoadingStart), load_textures)
-        .add_systems(Update, check_textures.run_if(in_state(AppState::LoadingStart)))
+        .add_systems(
+            Update,
+            check_textures.run_if(in_state(AppState::LoadingStart)),
+        )
         .add_systems(Update, animate_sprite)
         .add_systems(Update, player_movement_system)
+        .add_systems(Update, scroll_events)
         .add_systems(OnEnter(AppState::LoadingFinished), setup)
         .add_plugins(TilemapPlugin)
         .add_plugins(helpers::tiled::TiledMapPlugin)
