@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
- <tileset firstgid="1" name="roguelikeSheet_transparent" tilewidth="16" tileheight="16" spacing="1" margin="1" tilecount="1680" columns="56">
+ <tileset firstgid="1" name="roguelikeSheet_transparent" tilewidth="16" tileheight="16" spacing="1" margin="1" tilecount="1680" columns="56" tilerendersize="grid" fillmode="preserve-aspect-fit">
   <image source="roguelikeSheet_transparent.png" width="968" height="526"/>
  </tileset>
  <layer id="1" name="Tile Layer 1" width="10" height="10">
