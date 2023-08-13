@@ -270,7 +270,9 @@ fn setup(
         SpriteAnimationIndices::new(PLAYER_SPRITE_NAME, asset_server, texture_atlas.clone());
     let atlas_handle = texture_atlases.add(texture_atlas);
 
-    commands.spawn(Camera2dBundle::default());
+    let mut camera = Camera2dBundle::default();
+    camera.projection.scale = ORTHO_SCALE_MIN;
+    commands.spawn(camera);
 
     // setup player sprite from the atlas
     commands.spawn((
