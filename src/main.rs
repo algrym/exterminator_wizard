@@ -212,23 +212,26 @@ fn scroll_events(
     use bevy::input::mouse::MouseScrollUnit;
     for ev in scroll_evr.iter() {
         for mut ortho in query.iter_mut() {
+            let mut log_scale = ortho.scale.ln();
+
             match ev.unit {
                 MouseScrollUnit::Line => {
                     info!(
                         "Scroll (line units): vertical: {}, horizontal: {}",
                         ev.y, ev.x
                     );
-                    ortho.scale += ev.y;
+                    log_scale += ev.y;
                 }
                 MouseScrollUnit::Pixel => {
                     info!(
                         "Scroll (pixel units): vertical: {}, horizontal: {}, scale: {}",
                         ev.y, ev.x, ortho.scale,
                     );
-                    ortho.scale += ev.y * MOUSE_SCROLL_SCALE_PIXEL;
+                    log_scale += ev.y * MOUSE_SCROLL_SCALE_PIXEL;
                 }
             }
 
+            ortho.scale = log_scale.exp();
             ortho.scale = ortho.scale.clamp(ORTHO_SCALE_MIN, ORTHO_SCALE_MAX);
         }
     }
