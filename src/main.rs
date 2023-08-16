@@ -1,6 +1,5 @@
 use std::vec::Vec;
 
-use bevy::input::mouse::MouseWheel;
 use bevy::{
     asset::LoadState,
     diagnostic::{
@@ -8,6 +7,8 @@ use bevy::{
     },
     prelude::*,
 };
+use bevy::input::mouse::MouseWheel;
+use bevy_ecs_ldtk::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 // What sprites should we use for the player?
@@ -254,6 +255,10 @@ fn setup(
     }
 
     // setup the map
+    commands.spawn(LdtkWorldBundle {
+        ldtk_handle: asset_server.load(MAP_FILENAME),
+        ..Default::default()
+    });
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
     let player_indices =
@@ -318,6 +323,7 @@ fn main() {
         .add_plugins(LogDiagnosticsPlugin::default())
         .add_plugins(FrameTimeDiagnosticsPlugin)
         .add_plugins(WorldInspectorPlugin::new())
+        .add_plugins(LdtkPlugin)
         .add_state::<AppState>()
         .add_systems(OnEnter(AppState::LoadingStart), load_textures)
         .add_systems(
@@ -328,5 +334,6 @@ fn main() {
         .add_systems(Update, player_movement_system)
         .add_systems(Update, scroll_events)
         .add_systems(OnEnter(AppState::LoadingFinished), setup)
+        .insert_resource(LevelSelection::Index(0))
         .run();
 }
