@@ -8,16 +8,13 @@ use bevy::{
     },
     prelude::*,
 };
-use bevy_ecs_tilemap::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
-
-mod helpers;
 
 // What sprites should we use for the player?
 const PLAYER_SPRITE_NAME: &str = "sprites/amg1";
 
 // What is the filename of the map to load?
-const MAP_FILENAME: &str = "map.tmx";
+const MAP_FILENAME: &str = "map.ldtk";
 
 // How long should we pause between player frames?
 const PLAYER_ANIMATION_DURATION: f32 = 0.25;
@@ -257,16 +254,6 @@ fn setup(
     }
 
     // setup the map
-    let map_handle: Handle<helpers::tiled::TiledMap> = asset_server.load(MAP_FILENAME);
-
-    commands.spawn(helpers::tiled::TiledMapBundle {
-        tiled_map: map_handle,
-        transform: Transform {
-            scale: Vec3::splat(SPRITE_SCALE),
-            ..default()
-        },
-        ..Default::default()
-    });
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
     let player_indices =
@@ -341,7 +328,5 @@ fn main() {
         .add_systems(Update, player_movement_system)
         .add_systems(Update, scroll_events)
         .add_systems(OnEnter(AppState::LoadingFinished), setup)
-        .add_plugins(TilemapPlugin)
-        .add_plugins(helpers::tiled::TiledMapPlugin)
         .run();
 }
