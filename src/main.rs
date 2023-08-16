@@ -17,6 +17,11 @@ const PLAYER_SPRITE_NAME: &str = "sprites/amg1";
 // What is the filename of the map to load?
 const MAP_FILENAME: &str = "map.ldtk";
 
+// What Z depth for player sprites
+// 0.0 background
+// 1.0 tiles
+const PLAYER_SPRITE_DEPTH: f32 = 2.0;
+
 // How long should we pause between player frames?
 const PLAYER_ANIMATION_DURATION: f32 = 0.25;
 
@@ -257,6 +262,11 @@ fn setup(
     // setup the map
     commands.spawn(LdtkWorldBundle {
         ldtk_handle: asset_server.load(MAP_FILENAME),
+        transform: Transform {
+            // This is only zero now because eventually we'll transform it
+            translation: Vec3::new(0.0, 0.0, 0.0),
+            ..Default::default()
+        },
         ..Default::default()
     });
 
@@ -273,7 +283,7 @@ fn setup(
     commands.spawn((
         SpriteSheetBundle {
             transform: Transform {
-                translation: Vec3::new(0.0, 0.0, 1.0),
+                translation: Vec3::new(0.0, 0.0, PLAYER_SPRITE_DEPTH),
                 scale: Vec3::splat(SPRITE_SCALE),
                 ..default()
             },
