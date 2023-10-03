@@ -1,6 +1,6 @@
 cffi==1.15.1
 mercurial==6.4
-Pillow==10.0.0
+Pillow==10.0.1
 protobuf==4.21.12
 pycparser==2.21
 PyQt6==6.5.1
