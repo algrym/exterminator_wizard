@@ -11,7 +11,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins.set(ImagePlugin::default_nearest()),
             LdtkPlugin,
-            PanCamPlugin::default(),
+            PanCamPlugin,
             WorldInspectorPlugin::new(),
         ))
         .insert_resource(LevelSelection::Uid(0))
