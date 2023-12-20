@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_pancam::{PanCam, PanCamPlugin};
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 // What is the filename of the map to load?
 const MAP_FILENAME: &str = "map.ldtk";
@@ -10,6 +11,7 @@ fn main() {
         .add_plugins((DefaultPlugins.set(ImagePlugin::default_nearest()),
                       LdtkPlugin,
                       PanCamPlugin::default(),
+                      WorldInspectorPlugin::new(),
         ))
         .insert_resource(LevelSelection::Uid(0))
         .insert_resource(LdtkSettings {
