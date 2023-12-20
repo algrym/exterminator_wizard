@@ -1,17 +1,18 @@
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
-use bevy_pancam::{PanCam, PanCamPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_pancam::{PanCam, PanCamPlugin};
 
 // What is the filename of the map to load?
 const MAP_FILENAME: &str = "map.ldtk";
 
 fn main() {
     App::new()
-        .add_plugins((DefaultPlugins.set(ImagePlugin::default_nearest()),
-                      LdtkPlugin,
-                      PanCamPlugin::default(),
-                      WorldInspectorPlugin::new(),
+        .add_plugins((
+            DefaultPlugins.set(ImagePlugin::default_nearest()),
+            LdtkPlugin,
+            PanCamPlugin::default(),
+            WorldInspectorPlugin::new(),
         ))
         .insert_resource(LevelSelection::Uid(0))
         .insert_resource(LdtkSettings {
@@ -21,13 +22,13 @@ fn main() {
             set_clear_color: SetClearColor::FromLevelBackground,
             ..Default::default()
         })
-
         .add_systems(Startup, setup)
         .run();
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn(Camera2dBundle::default())
+    commands
+        .spawn(Camera2dBundle::default())
         .insert(PanCam::default());
 
     commands.spawn(LdtkWorldBundle {
