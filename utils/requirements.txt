@@ -1,14 +1,1 @@
-cffi==1.15.1
-mercurial==6.4
-Pillow==10.0.0
-protobuf==4.21.12
-pycparser==2.21
-PyQt6==6.5.1
-PyQt6-3D==6.5.0
-PyQt6-Charts==6.5.0
-PyQt6-DataVisualization==6.5.0
-PyQt6-NetworkAuth==6.5.0
-PyQt6-sip==13.5.1
-PyQt6-WebEngine==6.5.0
-PyYAML==6.0
-six==1.16.0
+Pillow==10.1.0
