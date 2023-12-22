@@ -33,11 +33,14 @@ fn setup_player(
     let texture_handle = asset_server.load("0x72_DungeonTilesetII_v1.6.png");
 
     // Break the sprite sheet down into a texture atlas (indexed grid)
-    let texture_atlas =
-        TextureAtlas::from_grid(texture_handle,
-                                Vec2::new(SPRITE_WIDTH, SPRITE_HEIGHT),
-                                SPRITE_SHEET_SIZE, SPRITE_SHEET_SIZE,
-                                None, None);
+    let texture_atlas = TextureAtlas::from_grid(
+        texture_handle,
+        Vec2::new(SPRITE_WIDTH, SPRITE_HEIGHT),
+        SPRITE_SHEET_SIZE,
+        SPRITE_SHEET_SIZE,
+        None,
+        None,
+    );
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
     // Save the player sprite
