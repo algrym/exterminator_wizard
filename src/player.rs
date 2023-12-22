@@ -1,10 +1,11 @@
 use bevy::prelude::*;
 
-const SPRITE_SIZE: f32 = 16.0;
+const SPRITE_HEIGHT: f32 = 32.0;
+const SPRITE_WIDTH: f32 = 16.0;
 const SPRITE_SHEET_SIZE: usize = 32;
 
-const PLAYER_SPRITE_FIRST_INDEX: usize = 104;
-const PLAYER_SPRITE_LAST_INDEX: usize = 112;
+const PLAYER_SPRITE_FIRST_INDEX: usize = 136;
+const PLAYER_SPRITE_LAST_INDEX: usize = 144;
 
 const ANIMATION_DELAY_SECONDS: f32 = 0.1;
 
@@ -35,7 +36,7 @@ fn setup_player(
     let texture_atlas =
         // Adjust the grid size and count based on your sprite sheet
         TextureAtlas::from_grid(texture_handle,
-                                Vec2::new(SPRITE_SIZE, SPRITE_SIZE),
+                                Vec2::new(SPRITE_WIDTH, SPRITE_HEIGHT),
                                 SPRITE_SHEET_SIZE, SPRITE_SHEET_SIZE,
                                 None, None);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
