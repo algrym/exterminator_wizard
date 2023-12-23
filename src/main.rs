@@ -1,14 +1,17 @@
-mod player;
-use player::PlayerPlugin;
-
 use bevy::core_pipeline::clear_color::ClearColorConfig;
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_pancam::{PanCam, PanCamPlugin};
 
+use player::PlayerPlugin;
+
+mod player;
+
 // What is the filename of the map to load?
 const MAP_FILENAME: &str = "map.ldtk";
+
+const CAMERA_SCALE: f32 = 0.5;
 
 fn main() {
     App::new()
@@ -34,6 +37,7 @@ fn main() {
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(Camera2dBundle {
+            transform: Transform::from_scale(Vec3::splat(CAMERA_SCALE)),
             camera_2d: Camera2d {
                 clear_color: ClearColorConfig::Custom(Color::BLACK),
             },
