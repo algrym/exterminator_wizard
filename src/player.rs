@@ -9,6 +9,10 @@ const PLAYER_SPRITE_LAST_INDEX: usize = 144;
 
 const ANIMATION_DELAY_SECONDS: f32 = 0.1;
 
+const PLAYER_SPRITE_SPEED: f32 = 100.0;
+
+const PLAYER_SPRITE_Z: f32 = 10.0;
+
 pub struct PlayerPlugin;
 
 #[derive(Component)]
@@ -20,7 +24,7 @@ struct AnimationTimer(Timer);
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup_player)
-            .add_systems(Update, animate_player);
+            .add_systems(Update, (move_player, animate_player));
     }
 }
 
@@ -48,7 +52,7 @@ fn setup_player(
         .spawn(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
             // Shift the sprite a half-tile horizontally to make it line up
-            transform: Transform::from_xyz(SPRITE_WIDTH / 2.0, 0.0, 0.0),
+            transform: Transform::from_xyz(SPRITE_WIDTH / 2.0, 0.0, PLAYER_SPRITE_Z),
             ..Default::default()
         })
         .insert(AnimationTimer(Timer::from_seconds(
@@ -74,6 +78,31 @@ fn animate_player(
             } else {
                 sprite.index + 1
             };
+        }
+    }
+}
+
+fn move_player(
+    mut characters: Query<&mut Transform, With<Player>>,
+    input: Res<Input<KeyCode>>,
+    time: Res<Time>,
+) {
+    info!("move_player: {:?}", input);
+    for mut transform in characters.iter_mut() {
+        let speed = PLAYER_SPRITE_SPEED * time.delta_seconds(); // You can adjust the speed as necessary
+
+        // These are NOT else-ifs, in case you want multiple buttons held down.
+        if input.pressed(KeyCode::W) {
+            transform.translation.y += speed;
+        }
+        if input.pressed(KeyCode::S) {
+            transform.translation.y -= speed;
+        }
+        if input.pressed(KeyCode::A) {
+            transform.translation.x -= speed;
+        }
+        if input.pressed(KeyCode::D) {
+            transform.translation.x += speed;
         }
     }
 }
