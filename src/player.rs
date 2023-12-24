@@ -83,13 +83,12 @@ fn animate_player(
 }
 
 fn move_player(
-    mut characters: Query<&mut Transform, With<Player>>,
+    mut characters: Query<(&mut Transform, &mut TextureAtlasSprite), With<Player>>,
     input: Res<Input<KeyCode>>,
     time: Res<Time>,
 ) {
-    info!("move_player: {:?}", input);
-    for mut transform in characters.iter_mut() {
-        let speed = PLAYER_SPRITE_SPEED * time.delta_seconds(); // You can adjust the speed as necessary
+    for (mut transform, mut sprite) in characters.iter_mut() {
+        let speed = PLAYER_SPRITE_SPEED * time.delta_seconds();
 
         // These are NOT else-ifs, in case you want multiple buttons held down.
         if input.pressed(KeyCode::W) {
@@ -100,9 +99,11 @@ fn move_player(
         }
         if input.pressed(KeyCode::A) {
             transform.translation.x -= speed;
+            sprite.flip_x = true;
         }
         if input.pressed(KeyCode::D) {
             transform.translation.x += speed;
+            sprite.flip_x = false;
         }
     }
 }
