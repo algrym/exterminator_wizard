@@ -86,24 +86,57 @@ fn move_player(
     mut characters: Query<(&mut Transform, &mut TextureAtlasSprite), With<Player>>,
     input: Res<Input<KeyCode>>,
     time: Res<Time>,
+    mut camera_query: Query<
+        (
+            &mut bevy::render::camera::OrthographicProjection,
+            &mut Transform,
+        ),
+        Without<Player>,
+    >,
+    window_query: Query<&Window>,
 ) {
+    let window = window_query.single();
+    let window_size = Vec2::new(window.width(), window.height());
+
     for (mut transform, mut sprite) in characters.iter_mut() {
         let speed = PLAYER_SPRITE_SPEED * time.delta_seconds();
 
-        // These are NOT else-ifs, in case you want multiple buttons held down.
+        let mut move_vec = Vec2::ZERO;
+
         if input.pressed(KeyCode::W) {
-            transform.translation.y += speed;
+            move_vec.y += speed;
         }
         if input.pressed(KeyCode::S) {
-            transform.translation.y -= speed;
+            move_vec.y -= speed;
         }
         if input.pressed(KeyCode::A) {
-            transform.translation.x -= speed;
+            move_vec.x -= speed;
             sprite.flip_x = true;
         }
         if input.pressed(KeyCode::D) {
-            transform.translation.x += speed;
+            move_vec.x += speed;
             sprite.flip_x = false;
         }
+
+        transform.translation += move_vec.extend(0.0);
+
+        let (_orthographic_projection, mut camera_transform) = camera_query.single_mut();
+        let player_pos = Vec2::new(transform.translation.x, transform.translation.y);
+        let camera_pos = Vec2::new(
+            camera_transform.translation.x,
+            camera_transform.translation.y,
+        );
+
+        // If the distance from the player to the camera is too far,
+        // move the camera toward the player's position.
+        //   I haven't figured out how to do this yet.
+
+        info!(
+            "player@{:?} camera@{:?} window@{:?}",
+            player_pos, camera_pos, window_size
+        );
+
+        camera_transform.translation.x += move_vec.x;
+        camera_transform.translation.y += move_vec.y;
     }
 }

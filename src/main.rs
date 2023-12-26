@@ -2,7 +2,6 @@ use bevy::core_pipeline::clear_color::ClearColorConfig;
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
-use bevy_pancam::{PanCam, PanCamPlugin};
 
 use player::PlayerPlugin;
 
@@ -18,7 +17,6 @@ fn main() {
         .add_plugins((
             DefaultPlugins.set(ImagePlugin::default_nearest()),
             LdtkPlugin,
-            PanCamPlugin,
             PlayerPlugin,
             WorldInspectorPlugin::new(),
         ))
@@ -35,15 +33,13 @@ fn main() {
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands
-        .spawn(Camera2dBundle {
-            transform: Transform::from_scale(Vec3::splat(CAMERA_SCALE)),
-            camera_2d: Camera2d {
-                clear_color: ClearColorConfig::Custom(Color::BLACK),
-            },
-            ..default()
-        })
-        .insert(PanCam::default());
+    commands.spawn(Camera2dBundle {
+        transform: Transform::from_scale(Vec3::splat(CAMERA_SCALE)),
+        camera_2d: Camera2d {
+            clear_color: ClearColorConfig::Custom(Color::BLACK),
+        },
+        ..default()
+    });
 
     commands.spawn(LdtkWorldBundle {
         ldtk_handle: asset_server.load(MAP_FILENAME),

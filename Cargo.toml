@@ -9,7 +9,6 @@ edition = "2021"
 bevy = { version = "0.11", features = ["dynamic_linking"] }
 bevy-inspector-egui = "0.20"
 bevy_ecs_ldtk = "0.8"
-bevy_pancam = "0.9"
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]
