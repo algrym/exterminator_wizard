@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 bevy = { version = "0.11", features = ["dynamic_linking"] }
-bevy-inspector-egui = "0.20"
+bevy-inspector-egui = "0.21"
 bevy_ecs_ldtk = "0.8"
 
 # Enable a small amount of optimization in debug mode
