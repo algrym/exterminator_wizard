@@ -133,7 +133,10 @@ fn move_player(
 
         info!(
             "player@{:?} {:?} camera@{:?} window@{:?}",
-            player_pos, camera_pos.distance(player_pos), camera_pos, window_size,
+            player_pos,
+            camera_pos.distance(player_pos),
+            camera_pos,
+            window_size,
         );
 
         // If the player x is more than a quarter of the (scaled)
