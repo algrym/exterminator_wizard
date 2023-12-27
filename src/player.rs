@@ -13,6 +13,10 @@ const PLAYER_SPRITE_SPEED: f32 = 100.0;
 
 const PLAYER_SPRITE_Z: f32 = 10.0;
 
+// This should be same value as in main.rs, eventually linked
+const CAMERA_SCALE: f32 = 0.5;
+const CAMERA_SCALE_QUARTER: f32 = CAMERA_SCALE / 4.0;
+
 pub struct PlayerPlugin;
 
 #[derive(Component)]
@@ -127,16 +131,20 @@ fn move_player(
             camera_transform.translation.y,
         );
 
-        // If the distance from the player to the camera is too far,
-        // move the camera toward the player's position.
-        //   I haven't figured out how to do this yet.
-
         info!(
-            "player@{:?} camera@{:?} window@{:?}",
-            player_pos, camera_pos, window_size
+            "player@{:?} {:?} camera@{:?} window@{:?}",
+            player_pos, camera_pos.distance(player_pos), camera_pos, window_size,
         );
 
-        camera_transform.translation.x += move_vec.x;
-        camera_transform.translation.y += move_vec.y;
+        // If the player x is more than a quarter of the (scaled)
+        //   window size to the camera, move the camera.
+        // TODO: camera position needs to reset on window resize event
+        if (camera_pos.x - player_pos.x).abs() > (window_size.x * CAMERA_SCALE_QUARTER) {
+            camera_transform.translation.x += move_vec.x;
+        }
+
+        if (camera_pos.y - player_pos.y).abs() > (window_size.y * CAMERA_SCALE_QUARTER) {
+            camera_transform.translation.y += move_vec.y;
+        }
     }
 }
