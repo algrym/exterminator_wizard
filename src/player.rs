@@ -131,7 +131,7 @@ fn move_player(
             camera_transform.translation.y,
         );
 
-        info!(
+        debug!(
             "player@{:?} {:?} camera@{:?} window@{:?}",
             player_pos,
             camera_pos.distance(player_pos),

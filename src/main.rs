@@ -13,9 +13,20 @@ const MAP_FILENAME: &str = "map.ldtk";
 const CAMERA_SCALE: f32 = 0.5;
 
 fn main() {
+    let primary_window = Window {
+        title: "Exterminator Wizard".to_string(),
+        resizable: false,
+        ..Default::default()
+    };
+
     App::new()
         .add_plugins((
-            DefaultPlugins.set(ImagePlugin::default_nearest()),
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(primary_window),
+                    ..default()
+                })
+                .set(ImagePlugin::default_nearest()),
             LdtkPlugin,
             PlayerPlugin,
             WorldInspectorPlugin::new(),
