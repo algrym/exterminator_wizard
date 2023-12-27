@@ -6,11 +6,8 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use player::PlayerPlugin;
 
 mod player;
-
-// What is the filename of the map to load?
-const MAP_FILENAME: &str = "map.ldtk";
-
-const CAMERA_SCALE: f32 = 0.5;
+mod constants;
+use crate::constants::*;
 
 fn main() {
     let primary_window = Window {

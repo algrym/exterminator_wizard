@@ -1,0 +1,11 @@
+pub const MAP_FILENAME: &str = "map.ldtk";
+pub const CAMERA_SCALE: f32 = 0.5;
+pub const SPRITE_HEIGHT: f32 = 32.0;
+pub const SPRITE_WIDTH: f32 = 16.0;
+pub const SPRITE_SHEET_SIZE: usize = 32;
+pub const PLAYER_SPRITE_FIRST_INDEX: usize = 136;
+pub const PLAYER_SPRITE_LAST_INDEX: usize = 144;
+pub const ANIMATION_DELAY_SECONDS: f32 = 0.1;
+pub const PLAYER_SPRITE_SPEED: f32 = 100.0;
+pub const PLAYER_SPRITE_Z: f32 = 10.0;
+pub const CAMERA_SCALE_QUARTER: f32 = CAMERA_SCALE / 4.0;

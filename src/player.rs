@@ -1,21 +1,6 @@
 use bevy::prelude::*;
 
-const SPRITE_HEIGHT: f32 = 32.0;
-const SPRITE_WIDTH: f32 = 16.0;
-const SPRITE_SHEET_SIZE: usize = 32;
-
-const PLAYER_SPRITE_FIRST_INDEX: usize = 136;
-const PLAYER_SPRITE_LAST_INDEX: usize = 144;
-
-const ANIMATION_DELAY_SECONDS: f32 = 0.1;
-
-const PLAYER_SPRITE_SPEED: f32 = 100.0;
-
-const PLAYER_SPRITE_Z: f32 = 10.0;
-
-// This should be same value as in main.rs, eventually linked
-const CAMERA_SCALE: f32 = 0.5;
-const CAMERA_SCALE_QUARTER: f32 = CAMERA_SCALE / 4.0;
+use crate::constants::*;
 
 pub struct PlayerPlugin;
 
