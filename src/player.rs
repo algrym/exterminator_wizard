@@ -43,6 +43,7 @@ fn setup_player(
             ANIMATION_DELAY_SECONDS,
             TimerMode::Repeating,
         )))
+        .insert(Name::new("Player"))
         .insert(Player);
 }
 
