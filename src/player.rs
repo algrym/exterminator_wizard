@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
 
-use crate::constants::*;
 use crate::components::*;
+use crate::constants::*;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
@@ -71,13 +71,7 @@ fn move_player(
     mut characters: Query<(&mut Transform, &mut TextureAtlasSprite), With<Player>>,
     input: Res<Input<KeyCode>>,
     time: Res<Time>,
-    mut camera_query: Query<
-        (
-            &mut bevy::render::camera::OrthographicProjection,
-            &mut Transform,
-        ),
-        Without<Player>,
-    >,
+    mut camera_query: Query<(&mut OrthographicProjection, &mut Transform), Without<Player>>,
     window_query: Query<&Window>,
 ) {
     let window = window_query.single();

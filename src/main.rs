@@ -5,9 +5,9 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 pub use components::PlayerPlugin;
 
-mod player;
-mod constants;
 mod components;
+mod constants;
+mod player;
 
 use crate::constants::*;
 

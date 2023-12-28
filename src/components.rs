@@ -18,4 +18,3 @@ pub struct PlayerBundle {
 
 #[derive(Component)]
 pub struct AnimationTimer(pub Timer);
-
