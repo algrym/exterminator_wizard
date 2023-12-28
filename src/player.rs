@@ -113,6 +113,8 @@ fn move_player(
             camera_pos,
             window_size,
         );
+        info!("player@{:?}", bevy_ecs_ldtk::utils::translation_to_grid_coords(player_pos,
+            IVec2::new(TILE_SIZE, TILE_SIZE)));
 
         // If the player x is more than a quarter of the (scaled)
         //   window size to the camera, move the camera.

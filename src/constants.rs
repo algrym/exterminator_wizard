@@ -1,5 +1,6 @@
 pub const MAP_FILENAME: &str = "map.ldtk";
 pub const CAMERA_SCALE: f32 = 0.5;
+pub const TILE_SIZE: i32 = 16;
 pub const SPRITE_HEIGHT: f32 = 32.0;
 pub const SPRITE_WIDTH: f32 = 16.0;
 pub const SPRITE_SHEET_SIZE: usize = 32;
