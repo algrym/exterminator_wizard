@@ -3,10 +3,12 @@ use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-use player::PlayerPlugin;
+pub use components::PlayerPlugin;
 
 mod player;
 mod constants;
+mod components;
+
 use crate::constants::*;
 
 fn main() {

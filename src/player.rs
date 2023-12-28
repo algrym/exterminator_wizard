@@ -1,18 +1,13 @@
 use bevy::prelude::*;
+use bevy_ecs_ldtk::prelude::*;
 
 use crate::constants::*;
-
-pub struct PlayerPlugin;
-
-#[derive(Component)]
-struct Player;
-
-#[derive(Component)]
-struct AnimationTimer(Timer);
+use crate::components::*;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup_player)
+            .register_ldtk_entity::<PlayerBundle>("Player")
             .add_systems(Update, (move_player, animate_player));
     }
 }
