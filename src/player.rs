@@ -4,6 +4,7 @@ use bevy_ecs_ldtk::utils::grid_coords_to_translation;
 
 use crate::components::*;
 use crate::constants::*;
+use crate::map::LevelWalls;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
@@ -16,6 +17,7 @@ fn move_player_from_input(
     mut player_query: Query<(&mut Transform, &mut GridCoords), With<Player>>,
     mut camera_query: Query<(&mut OrthographicProjection, &mut Transform), Without<Player>>,
     input_res: Res<Input<KeyCode>>,
+    level_walls: Res<LevelWalls>,
 ) {
     // Convert input to change in GridCoords
     let movement_direction = if input_res.just_pressed(KeyCode::W) {
@@ -28,18 +30,20 @@ fn move_player_from_input(
         GridCoords::new(1, 0)
     } else {
         // If we didn't move the player, we don't need to continue
-        GridCoords::new(0, 0)
-        //return;
+        GridCoords::new(0, 0) // TODO: don't continue the function if no movement, its wasteful
+                              //return;
     };
 
     // Assign the new destination to the player
     for (mut player_transform, mut player_grid_coords) in player_query.iter_mut() {
         let destination = *player_grid_coords + movement_direction;
-        *player_grid_coords = destination;
+        if !level_walls.in_wall(&destination) {
+            *player_grid_coords = destination;
+        }
 
         // Update the player transform
         player_transform.translation =
-            grid_coords_to_translation(*player_grid_coords, IVec2::splat(TILE_SIZE))
+            grid_coords_to_translation(*player_grid_coords, IVec2::splat(GRID_SIZE))
                 .extend(player_transform.translation.z);
 
         // Assign x and y of player transform to the camera (not z)

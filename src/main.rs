@@ -4,12 +4,12 @@ use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-pub use components::PlayerPlugin;
-
 use crate::constants::*;
+pub use components::*;
 
 mod components;
 mod constants;
+mod map;
 mod player;
 
 fn main() {
@@ -30,6 +30,7 @@ fn main() {
                 .set(ImagePlugin::default_nearest()),
             LdtkPlugin,
             PlayerPlugin,
+            MapPlugin,
         ))
         .add_plugins(
             WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::Escape)),

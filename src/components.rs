@@ -1,5 +1,5 @@
 use bevy::prelude::{Bundle, Component, SpriteSheetBundle};
-use bevy_ecs_ldtk::{GridCoords, LdtkEntity};
+use bevy_ecs_ldtk::{GridCoords, LdtkEntity, LdtkIntCell};
 // use bevy_inspector_egui::InspectorOptions;
 
 pub struct PlayerPlugin;
@@ -14,4 +14,14 @@ pub struct PlayerBundle {
     pub sprite_bundle: SpriteSheetBundle,
     #[grid_coords]
     pub grid_coords: GridCoords,
+}
+
+pub struct MapPlugin;
+
+#[derive(Default, Component)]
+pub struct Wall;
+
+#[derive(Default, Bundle, LdtkIntCell)]
+pub struct WallBundle {
+    pub wall: Wall,
 }
