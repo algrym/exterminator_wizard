@@ -1,4 +1,5 @@
 use bevy::core_pipeline::clear_color::ClearColorConfig;
+use bevy::input::common_conditions::input_toggle_active;
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -29,8 +30,10 @@ fn main() {
                 .set(ImagePlugin::default_nearest()),
             LdtkPlugin,
             PlayerPlugin,
-            WorldInspectorPlugin::new(),
         ))
+        .add_plugins(
+            WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::Escape)),
+        )
         .insert_resource(LevelSelection::Uid(0))
         .insert_resource(LdtkSettings {
             level_spawn_behavior: LevelSpawnBehavior::UseWorldTranslation {
