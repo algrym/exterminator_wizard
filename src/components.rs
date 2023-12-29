@@ -1,20 +1,17 @@
-use bevy::prelude::{Bundle, Component, SpriteSheetBundle, Timer};
+use bevy::prelude::{Bundle, Component, SpriteSheetBundle};
 use bevy_ecs_ldtk::{GridCoords, LdtkEntity};
-use bevy_inspector_egui::InspectorOptions;
+// use bevy_inspector_egui::InspectorOptions;
 
 pub struct PlayerPlugin;
 
-#[derive(Component, Copy, Clone, Eq, PartialEq, Debug, Default, InspectorOptions)]
+#[derive(Default, Component)]
 pub struct Player;
 
-#[derive(Default, Bundle, Clone, LdtkEntity, InspectorOptions)]
+#[derive(Default, Bundle, LdtkEntity)]
 pub struct PlayerBundle {
     pub player: Player,
     #[sprite_sheet_bundle]
-    sprite_sheet_bundle: SpriteSheetBundle,
+    pub sprite_bundle: SpriteSheetBundle,
     #[grid_coords]
-    grid_coords: GridCoords,
+    pub grid_coords: GridCoords,
 }
-
-#[derive(Component)]
-pub struct AnimationTimer(pub Timer);

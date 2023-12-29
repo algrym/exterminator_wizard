@@ -5,15 +5,16 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 pub use components::PlayerPlugin;
 
+use crate::constants::*;
+
 mod components;
 mod constants;
 mod player;
 
-use crate::constants::*;
-
 fn main() {
     let primary_window = Window {
         title: "Exterminator Wizard".to_string(),
+        resolution: (WINDOW_WIDTH, WINDOW_HEIGHT).into(),
         resizable: false,
         ..Default::default()
     };
@@ -43,13 +44,12 @@ fn main() {
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn(Camera2dBundle {
-        transform: Transform::from_scale(Vec3::splat(CAMERA_SCALE)),
-        camera_2d: Camera2d {
-            clear_color: ClearColorConfig::Custom(Color::BLACK),
-        },
-        ..default()
-    });
+    let mut camera = Camera2dBundle::default();
+    camera.projection.scale = CAMERA_SCALE;
+    camera.camera_2d.clear_color = ClearColorConfig::Custom(Color::BLACK);
+
+    info!("spawn camera@{:?}", camera.transform.translation);
+    commands.spawn(camera);
 
     commands.spawn(LdtkWorldBundle {
         ldtk_handle: asset_server.load(MAP_FILENAME),
