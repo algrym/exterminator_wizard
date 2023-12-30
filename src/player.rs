@@ -14,7 +14,10 @@ impl Plugin for PlayerPlugin {
 }
 
 fn move_player_from_input(
-    mut player_query: Query<(&mut Transform, &mut GridCoords), With<Player>>,
+    mut player_query: Query<
+        (&mut Transform, &mut TextureAtlasSprite, &mut GridCoords),
+        With<Player>,
+    >,
     mut camera_query: Query<(&mut OrthographicProjection, &mut Transform), Without<Player>>,
     input_res: Res<Input<KeyCode>>,
     level_walls: Res<LevelWalls>,
@@ -35,10 +38,20 @@ fn move_player_from_input(
     };
 
     // Assign the new destination to the player
-    for (mut player_transform, mut player_grid_coords) in player_query.iter_mut() {
+    for (mut player_transform, mut player_sprite, mut player_grid_coords) in player_query.iter_mut()
+    {
         let destination = *player_grid_coords + movement_direction;
-        if !level_walls.in_wall(&destination) {
+        let mut player_adjustment = destination;
+        player_adjustment.y -= 1; // Measure from the lower half of the player sprite
+        if !level_walls.in_wall(&player_adjustment) {
             *player_grid_coords = destination;
+        }
+
+        // Make the player sprite face the right direction
+        match movement_direction.x {
+            x if x < 0 => player_sprite.flip_x = true,
+            x if x > 0 => player_sprite.flip_x = false,
+            _ => {} // No change on zero
         }
 
         // Update the player transform
