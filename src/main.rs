@@ -1,11 +1,13 @@
 use bevy::core_pipeline::clear_color::ClearColorConfig;
+use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin, SystemInformationDiagnosticsPlugin};
 use bevy::input::common_conditions::input_toggle_active;
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-use crate::constants::*;
 pub use components::*;
+
+use crate::constants::*;
 
 mod components;
 mod constants;
@@ -33,7 +35,12 @@ fn main() {
             MapPlugin,
         ))
         .add_plugins(
-            WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::Escape)),
+            (
+                WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::Escape)),
+                SystemInformationDiagnosticsPlugin::default(),
+                LogDiagnosticsPlugin::default(),
+                FrameTimeDiagnosticsPlugin::default(),
+            )
         )
         .insert_resource(LevelSelection::Uid(0))
         .insert_resource(LdtkSettings {
