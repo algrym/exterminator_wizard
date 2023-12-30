@@ -1,5 +1,7 @@
 use bevy::core_pipeline::clear_color::ClearColorConfig;
-use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin, SystemInformationDiagnosticsPlugin};
+use bevy::diagnostic::{
+    FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin, SystemInformationDiagnosticsPlugin,
+};
 use bevy::input::common_conditions::input_toggle_active;
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
@@ -34,14 +36,12 @@ fn main() {
             PlayerPlugin,
             MapPlugin,
         ))
-        .add_plugins(
-            (
-                WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::Escape)),
-                SystemInformationDiagnosticsPlugin::default(),
-                LogDiagnosticsPlugin::default(),
-                FrameTimeDiagnosticsPlugin::default(),
-            )
-        )
+        .add_plugins((
+            WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::Escape)),
+            SystemInformationDiagnosticsPlugin,
+            LogDiagnosticsPlugin::default(),
+            FrameTimeDiagnosticsPlugin,
+        ))
         .insert_resource(LevelSelection::Uid(0))
         .insert_resource(LdtkSettings {
             level_spawn_behavior: LevelSpawnBehavior::UseWorldTranslation {
