@@ -8,7 +8,7 @@ use crate::map::LevelWalls;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, move_player_from_input)
+        app.add_systems(Update, (move_player_from_input, animate_player))
             .register_ldtk_entity::<PlayerBundle>("Player");
     }
 }
@@ -62,12 +62,34 @@ fn move_player_from_input(
         // Assign x and y of player transform to the camera (not z)
         let (_orthographic_projection, mut camera_transform) = camera_query.single_mut();
         info!(
-            "camera@{:?} player@{:?}",
-            camera_transform.translation, player_transform.translation
+            "camera@{:?} player@{:?} sprite.index={:?}",
+            camera_transform.translation, player_transform.translation, player_sprite.index,
         );
 
         camera_transform.translation.x = player_transform.translation.x;
         camera_transform.translation.y =
             player_transform.translation.y - (WINDOW_HEIGHT / CAMERA_HEIGHT_OFFSET);
+    }
+}
+
+fn animate_player(
+    time: Res<Time>,
+    mut query: Query<(&mut Animation, &mut TextureAtlasSprite), With<Player>>,
+) {
+    for (mut animation, mut sprite) in query.iter_mut() {
+        animation.timer.tick(time.delta());
+        if animation.timer.just_finished() {
+            // Cycle through the list of animation frames
+            if !animation.frames.is_empty() {
+                let next_frame = (animation
+                    .frames
+                    .iter()
+                    .position(|&f| f == sprite.index)
+                    .unwrap_or(0)
+                    + 1)
+                    % animation.frames.len();
+                sprite.index = animation.frames[next_frame];
+            }
+        }
     }
 }
