@@ -39,12 +39,12 @@ fn cache_wall_locations(
     ldtk_project_assets: Res<Assets<LdtkAsset>>,
 ) {
     for level_event in level_events.iter() {
-        if let LevelEvent::Spawned(_level_iid) = level_event {
+        if let LevelEvent::Spawned(level_iid) = level_event {
             let ldtk_project = ldtk_project_assets
                 .get(ldtk_project_entities.single())
                 .expect("ERROR: LdtkProject should be loaded when level is spawned");
             let level = ldtk_project
-                .get_level(&LevelSelection::Index(0)) // TODO: bad assumption to use const 0 for Index
+                .get_level(&LevelSelection::Iid(level_iid.to_string()))
                 .expect("ERROR: spawned level should exist in project");
 
             let wall_locations = walls.iter().copied().collect();
