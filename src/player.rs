@@ -36,23 +36,23 @@ fn move_player_from_input(
         move_vec.y -= speed;
     } else if input_res.pressed(KeyCode::D) {
         move_vec.x += speed;
-    } else {
-        // If we didn't move the player, we don't need to continue
-        return;
     };
+    // If we didn't move the player, we don't need to continue.
+    // We need to run the rest of this ONE TIME to fix the camera.
 
     // Assign the new destination to the player
     for (mut player_transform, mut player_sprite, mut player_grid_coords) in player_query.iter_mut()
     {
-        // let destination = *player_grid_coords + movement_direction;
+        // Where is the player's planned destination, in transform domain?
         let player_dest_trans =
             convert_vec3_to_vec2(player_transform.translation + move_vec.extend(0.0));
 
-        // let mut player_adjustment = destination;
+        // Where is the player's planned destination, in coordinate domain?
         let mut player_dest_coords =
             translation_to_grid_coords(player_dest_trans, IVec2::splat(GRID_SIZE));
         player_dest_coords.y -= 1; // Measure from the lower half of the player sprite
 
+        // If there's no collision, then copy the plans into the actual
         if !level_walls.in_wall(&player_dest_coords) {
             *player_grid_coords = player_dest_coords;
             player_transform.translation.x = player_dest_trans.x;
@@ -68,11 +68,6 @@ fn move_player_from_input(
 
         // Assign x and y of player transform to the camera (not z)
         let (_orthographic_projection, mut camera_transform) = camera_query.single_mut();
-        debug!(
-            "camera@{:?} player@{:?} sprite.index={:?}",
-            camera_transform.translation, player_transform.translation, player_sprite.index,
-        );
-
         camera_transform.translation.x = player_transform.translation.x;
         camera_transform.translation.y =
             player_transform.translation.y - (WINDOW_HEIGHT / CAMERA_HEIGHT_OFFSET);
