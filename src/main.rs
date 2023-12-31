@@ -1,3 +1,6 @@
+// main.rs
+// github.com/algrym/exterminator_wizard
+
 use bevy::core_pipeline::clear_color::ClearColorConfig;
 use bevy::diagnostic::{
     FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin, SystemInformationDiagnosticsPlugin,
@@ -17,6 +20,7 @@ mod map;
 mod player;
 mod util; // Import the util module
 
+/// This function is the entry point of the "Exterminator Wizard" game.
 fn main() {
     let primary_window = Window {
         title: format!(
@@ -58,6 +62,7 @@ fn main() {
         .run();
 }
 
+/// This function initializes the camera and spawns the LDtk world.
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut camera = Camera2dBundle::default();
     camera.projection.scale = CAMERA_SCALE;
