@@ -1,3 +1,5 @@
+// player.rs
+
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_ecs_ldtk::utils::translation_to_grid_coords;
@@ -7,6 +9,9 @@ use crate::constants::*;
 use crate::map::LevelWalls;
 use crate::util::convert_vec3_to_vec2;
 
+/// PlayerPlugin is responsible for handling player-related functionalities
+/// in the game. This includes processing player input for movement
+/// and animating the player sprite.
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, (move_player_from_input, animate_player))
@@ -14,6 +19,18 @@ impl Plugin for PlayerPlugin {
     }
 }
 
+/// Processes player input for movement.
+///
+/// This function updates the player's position and orientation based on keyboard inputs.
+/// It ensures that the player does not move into walls and updates the camera position
+/// to follow the player.
+///
+/// # Arguments
+/// * `player_query` - Query to access player entities' transforms, sprites, and grid coordinates.
+/// * `time` - Resource to get time information for frame delta calculation.
+/// * `camera_query` - Query to access and update the camera's transform.
+/// * `input_res` - Resource to get the current input state.
+/// * `level_walls` - Resource containing information about wall locations in the level.
 fn move_player_from_input(
     mut player_query: Query<
         (&mut Transform, &mut TextureAtlasSprite, &mut GridCoords),
@@ -74,6 +91,14 @@ fn move_player_from_input(
     }
 }
 
+/// Animates the player sprite based on the defined animation frames.
+///
+/// This function cycles through a series of sprite indices to animate the player sprite.
+/// It uses a timer to control the animation speed.
+///
+/// # Arguments
+/// * `time` - Resource to get time information for the animation timer.
+/// * `query` - Query to access player entities' animations and texture atlas sprites.
 fn animate_player(
     time: Res<Time>,
     mut query: Query<(&mut Animation, &mut TextureAtlasSprite), With<Player>>,
