@@ -15,10 +15,14 @@ mod components;
 mod constants;
 mod map;
 mod player;
+mod util; // Import the util module
 
 fn main() {
     let primary_window = Window {
-        title: "Exterminator Wizard".to_string(),
+        title: format!(
+            "Exterminator Wizard v{} - ajw@ajw.io",
+            env!("CARGO_PKG_VERSION")
+        ),
         resolution: (WINDOW_WIDTH, WINDOW_HEIGHT).into(),
         resizable: false,
         ..Default::default()

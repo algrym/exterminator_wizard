@@ -4,3 +4,4 @@ pub const WINDOW_WIDTH: f32 = 1280.0;
 pub const WINDOW_HEIGHT: f32 = 720.0;
 pub const CAMERA_SCALE: f32 = 0.5;
 pub const CAMERA_HEIGHT_OFFSET: f32 = 1.5; // TODO: This is bogus. How does camera x,y work?
+pub const PLAYER_SPRITE_SPEED: f32 = 100.0;

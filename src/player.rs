@@ -1,10 +1,11 @@
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
-use bevy_ecs_ldtk::utils::grid_coords_to_translation;
+use bevy_ecs_ldtk::utils::translation_to_grid_coords;
 
 use crate::components::*;
 use crate::constants::*;
 use crate::map::LevelWalls;
+use crate::util::convert_vec3_to_vec2;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
@@ -18,50 +19,56 @@ fn move_player_from_input(
         (&mut Transform, &mut TextureAtlasSprite, &mut GridCoords),
         With<Player>,
     >,
+    time: Res<Time>,
     mut camera_query: Query<(&mut OrthographicProjection, &mut Transform), Without<Player>>,
     input_res: Res<Input<KeyCode>>,
     level_walls: Res<LevelWalls>,
 ) {
+    let speed = PLAYER_SPRITE_SPEED * time.delta_seconds();
+    let mut move_vec = Vec2::ZERO;
+
     // Convert input to change in GridCoords
-    let movement_direction = if input_res.just_pressed(KeyCode::W) {
-        GridCoords::new(0, 1)
-    } else if input_res.just_pressed(KeyCode::A) {
-        GridCoords::new(-1, 0)
-    } else if input_res.just_pressed(KeyCode::S) {
-        GridCoords::new(0, -1)
-    } else if input_res.just_pressed(KeyCode::D) {
-        GridCoords::new(1, 0)
+    if input_res.pressed(KeyCode::W) {
+        move_vec.y += speed;
+    } else if input_res.pressed(KeyCode::A) {
+        move_vec.x -= speed;
+    } else if input_res.pressed(KeyCode::S) {
+        move_vec.y -= speed;
+    } else if input_res.pressed(KeyCode::D) {
+        move_vec.x += speed;
     } else {
         // If we didn't move the player, we don't need to continue
-        GridCoords::new(0, 0) // TODO: don't continue the function if no movement, its wasteful
-                              //return;
+        return;
     };
 
     // Assign the new destination to the player
     for (mut player_transform, mut player_sprite, mut player_grid_coords) in player_query.iter_mut()
     {
-        let destination = *player_grid_coords + movement_direction;
-        let mut player_adjustment = destination;
-        player_adjustment.y -= 1; // Measure from the lower half of the player sprite
-        if !level_walls.in_wall(&player_adjustment) {
-            *player_grid_coords = destination;
+        // let destination = *player_grid_coords + movement_direction;
+        let player_dest_trans =
+            convert_vec3_to_vec2(player_transform.translation + move_vec.extend(0.0));
+
+        // let mut player_adjustment = destination;
+        let mut player_dest_coords =
+            translation_to_grid_coords(player_dest_trans, IVec2::splat(GRID_SIZE));
+        player_dest_coords.y -= 1; // Measure from the lower half of the player sprite
+
+        if !level_walls.in_wall(&player_dest_coords) {
+            *player_grid_coords = player_dest_coords;
+            player_transform.translation.x = player_dest_trans.x;
+            player_transform.translation.y = player_dest_trans.y;
         }
 
         // Make the player sprite face the right direction
-        match movement_direction.x {
-            x if x < 0 => player_sprite.flip_x = true,
-            x if x > 0 => player_sprite.flip_x = false,
+        match move_vec.x {
+            x if x < 0.0 => player_sprite.flip_x = true,
+            x if x > 0.0 => player_sprite.flip_x = false,
             _ => {} // No change on zero
         }
 
-        // Update the player transform
-        player_transform.translation =
-            grid_coords_to_translation(*player_grid_coords, IVec2::splat(GRID_SIZE))
-                .extend(player_transform.translation.z);
-
         // Assign x and y of player transform to the camera (not z)
         let (_orthographic_projection, mut camera_transform) = camera_query.single_mut();
-        info!(
+        debug!(
             "camera@{:?} player@{:?} sprite.index={:?}",
             camera_transform.translation, player_transform.translation, player_sprite.index,
         );
