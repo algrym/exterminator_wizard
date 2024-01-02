@@ -47,13 +47,16 @@ fn move_player_from_input(
     // Convert input to change in GridCoords
     if input_res.pressed(KeyCode::W) {
         move_vec.y += speed;
-    } else if input_res.pressed(KeyCode::A) {
+    }
+    if input_res.pressed(KeyCode::A) {
         move_vec.x -= speed;
-    } else if input_res.pressed(KeyCode::S) {
+    }
+    if input_res.pressed(KeyCode::S) {
         move_vec.y -= speed;
-    } else if input_res.pressed(KeyCode::D) {
+    }
+    if input_res.pressed(KeyCode::D) {
         move_vec.x += speed;
-    };
+    }
     // If we didn't move the player, we don't need to continue.
     // We need to run the rest of this ONE TIME to fix the camera.
 
