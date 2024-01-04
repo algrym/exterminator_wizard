@@ -9,6 +9,7 @@ use bevy::input::common_conditions::input_toggle_active;
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_rapier2d::prelude::*;
 
 pub use components::*;
 
@@ -43,6 +44,7 @@ fn main() {
             LdtkPlugin,
             PlayerPlugin,
             MapPlugin,
+            RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(GRID_SIZE as f32)
         ))
         .add_plugins((
             WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::Escape)),
@@ -56,6 +58,10 @@ fn main() {
                 load_level_neighbors: true,
             },
             set_clear_color: SetClearColor::FromLevelBackground,
+            ..Default::default()
+        })
+        .insert_resource(RapierConfiguration {
+            gravity: Vec2::ZERO,
             ..Default::default()
         })
         .add_systems(Startup, setup)
