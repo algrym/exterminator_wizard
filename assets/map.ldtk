@@ -11,7 +11,7 @@
 	"iid": "fac886b0-8990-11ee-a6f6-ed922cd9ab02",
 	"jsonVersion": "1.4.1",
 	"appBuildId": 471015,
-	"nextUid": 97,
+	"nextUid": 98,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "Free",
@@ -324,7 +324,43 @@
 			"limitBehavior": "PreventAdding",
 			"pivotX": 0,
 			"pivotY": 0,
-			"fieldDefs": []
+			"fieldDefs": [
+				{
+					"identifier": "frames",
+					"doc": "list of frame indexes",
+					"__type": "Array<Int>",
+					"uid": 97,
+					"type": "F_Int",
+					"isArray": true,
+					"canBeNull": false,
+					"arrayMinLength": null,
+					"arrayMaxLength": null,
+					"editorDisplayMode": "Hidden",
+					"editorDisplayScale": 1,
+					"editorDisplayPos": "Above",
+					"editorLinkStyle": "StraightArrow",
+					"editorDisplayColor": null,
+					"editorAlwaysShow": false,
+					"editorShowInWorld": true,
+					"editorCutLongValues": true,
+					"editorTextSuffix": null,
+					"editorTextPrefix": null,
+					"useForSmartColor": false,
+					"min": null,
+					"max": null,
+					"regex": null,
+					"acceptFileTypes": null,
+					"defaultOverride": null,
+					"textLanguageMode": null,
+					"symmetricalRef": false,
+					"autoChainRef": true,
+					"allowOutOfLevelRef": true,
+					"allowedRefs": "OnlySame",
+					"allowedRefsEntityUid": null,
+					"allowedRefTags": [],
+					"tilesetUid": null
+				}
+			]
 		}
 	], "tilesets": [
 		{
@@ -410,7 +446,17 @@
 							"height": 32,
 							"defUid": 32,
 							"px": [304,224],
-							"fieldInstances": []
+							"fieldInstances": [{ "__identifier": "frames", "__type": "Array<Int>", "__value": [136,137,138,139,140,141,142,143,144], "__tile": null, "defUid": 97, "realEditorValues": [
+								{ "id": "V_Int", "params": [136] },
+								{ "id": "V_Int", "params": [137] },
+								{ "id": "V_Int", "params": [138] },
+								{ "id": "V_Int", "params": [139] },
+								{ "id": "V_Int", "params": [140] },
+								{ "id": "V_Int", "params": [141] },
+								{ "id": "V_Int", "params": [142] },
+								{ "id": "V_Int", "params": [143] },
+								{ "id": "V_Int", "params": [144] }
+							] }]
 						}
 					]
 				},
