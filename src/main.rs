@@ -45,6 +45,7 @@ fn main() {
             PlayerPlugin,
             MapPlugin,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(GRID_SIZE as f32),
+            RapierDebugRenderPlugin::default(),
         ))
         .add_plugins((
             WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::Escape)),
