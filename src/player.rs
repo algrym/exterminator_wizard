@@ -124,10 +124,7 @@ fn animate_player(
     }
 }
 
-pub fn dbg_player(
-    input_res: Res<Input<KeyCode>>,
-    mut query: Query<(&EntityInstance, &Player)>,
-) {
+pub fn dbg_player(input_res: Res<Input<KeyCode>>, mut query: Query<(&EntityInstance, &Player)>) {
     if input_res.pressed(KeyCode::P) {
         for (entity_instance, player) in &mut query {
             dbg!("{:?}", &entity_instance);
