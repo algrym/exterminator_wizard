@@ -11,7 +11,7 @@ pub struct PlayerPlugin;
 
 /// Component representing the player entity.
 /// This component is used to identify and interact with the player in the game world.
-#[derive(Default, Component)]
+#[derive(Default, Component, Debug)]
 pub struct Player;
 
 /// Component for handling sprite animation.

@@ -14,7 +14,7 @@ use crate::util::convert_vec3_to_vec2;
 /// and animating the player sprite.
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (move_player_from_input, animate_player))
+        app.add_systems(Update, (move_player_from_input, animate_player, dbg_player))
             .register_ldtk_entity::<PlayerBundle>("Player");
     }
 }
@@ -120,6 +120,18 @@ fn animate_player(
                     % animation.frames.len();
                 sprite.index = animation.frames[next_frame];
             }
+        }
+    }
+}
+
+pub fn dbg_player(
+    input_res: Res<Input<KeyCode>>,
+    mut query: Query<(&EntityInstance, &Player)>,
+) {
+    if input_res.pressed(KeyCode::P) {
+        for (entity_instance, player) in &mut query {
+            dbg!("{:?}", &entity_instance);
+            dbg!("{:?}", &player);
         }
     }
 }
