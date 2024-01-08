@@ -19,7 +19,7 @@ mod components;
 mod constants;
 mod map;
 mod player;
-mod util; // Import the util module
+mod util;
 
 /// This function is the entry point of the "Exterminator Wizard" game.
 fn main() {
