@@ -5,6 +5,7 @@ use std::time::Duration;
 use bevy::prelude::{Bundle, Component, SpriteSheetBundle, Timer};
 use bevy::time::TimerMode;
 use bevy_ecs_ldtk::{GridCoords, LdtkEntity, LdtkIntCell};
+use bevy_rapier2d::prelude::*;
 
 use crate::constants::*;
 
@@ -40,7 +41,7 @@ impl Default for Animation {
 
 /// Bundle for creating a player entity.
 /// Groups all necessary components for a player entity, including sprite, grid position, and animation.
-#[derive(Default, Bundle, LdtkEntity)]
+#[derive(Bundle, LdtkEntity)]
 pub struct PlayerBundle {
     pub player: Player,
     #[sprite_sheet_bundle]
@@ -48,6 +49,21 @@ pub struct PlayerBundle {
     #[grid_coords]
     pub grid_coords: GridCoords,
     pub animation: Animation,
+    pub rigid_body: RigidBody,
+    pub collider: Collider,
+}
+
+impl Default for PlayerBundle {
+    fn default() -> Self {
+        PlayerBundle {
+            player: Default::default(),
+            sprite_bundle: Default::default(),
+            grid_coords: Default::default(),
+            animation: Default::default(),
+            rigid_body: RigidBody::Dynamic, // Makes the player affected by physics
+            collider: Collider::cuboid(PLAYER_SPRITE_WIDTH / 2.0, PLAYER_SPRITE_HEIGHT / 2.0),
+        }
+    }
 }
 
 /// Plugin responsible for adding map-related systems to the game.
@@ -59,7 +75,19 @@ pub struct Wall;
 
 /// Bundle for creating a wall entity.
 /// Groups all necessary components for a wall entity, primarily used for collision detection.
-#[derive(Default, Bundle, LdtkIntCell)]
+#[derive(Bundle, LdtkIntCell)]
 pub struct WallBundle {
     pub wall: Wall,
+    pub rigid_body: RigidBody,
+    pub collider: Collider,
+}
+
+impl Default for WallBundle {
+    fn default() -> Self {
+        WallBundle {
+            wall: Default::default(),
+            rigid_body: RigidBody::Fixed, // Walls are static
+            collider: Collider::cuboid(WALL_SPRITE_WIDTH / 2.0, WALL_SPRITE_HEIGHT / 2.0),
+        }
+    }
 }

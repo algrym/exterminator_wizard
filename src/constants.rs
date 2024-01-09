@@ -20,6 +20,14 @@ pub const CAMERA_SCALE: f32 = 0.5;
 /// Adjusts the camera's height position when following the player.
 pub const CAMERA_HEIGHT_OFFSET: f32 = 1.5; // TODO: This is bogus. How does camera x,y work?
 
+/// Dimensions for the wall sprites (16, 16)
+pub const WALL_SPRITE_WIDTH: f32 = GRID_SIZE as f32;
+pub const WALL_SPRITE_HEIGHT: f32 = GRID_SIZE as f32;
+
+/// Dimensions for the player sprite (16, 32)
+pub const PLAYER_SPRITE_WIDTH: f32 = GRID_SIZE as f32;
+pub const PLAYER_SPRITE_HEIGHT: f32 = 2.0 * GRID_SIZE as f32;
+
 /// Speed of the player sprite.
 /// This value determines how fast the player moves in the game world.
 pub const PLAYER_SPRITE_SPEED: f32 = 100.0;
