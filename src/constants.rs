@@ -23,3 +23,8 @@ pub const CAMERA_HEIGHT_OFFSET: f32 = 1.5; // TODO: This is bogus. How does came
 /// Speed of the player sprite.
 /// This value determines how fast the player moves in the game world.
 pub const PLAYER_SPRITE_SPEED: f32 = 100.0;
+
+/// List of player animation frame indexes
+/// This is the list of frame indexes that will be iterated through to show animation.
+/// TODO: PLAYER_SPRITE_FRAMES needs to be loaded from the LDTK player entity metadata.
+pub const PLAYER_SPRITE_FRAMES: [usize; 9] = [136, 137, 138, 139, 140, 141, 142, 143, 144];

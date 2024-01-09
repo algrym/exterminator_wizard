@@ -6,6 +6,8 @@ use bevy::prelude::{Bundle, Component, SpriteSheetBundle, Timer};
 use bevy::time::TimerMode;
 use bevy_ecs_ldtk::{GridCoords, LdtkEntity, LdtkIntCell};
 
+use crate::constants::*;
+
 /// Plugin responsible for adding player-related systems to the game.
 pub struct PlayerPlugin;
 
@@ -30,7 +32,7 @@ impl Default for Animation {
     /// Provides a default set of frames and a timer for the animation.
     fn default() -> Self {
         Animation {
-            frames: vec![136, 137, 138, 139, 140, 141, 142, 143, 144], // TODO: load this elsewhere
+            frames: PLAYER_SPRITE_FRAMES.to_vec(),
             timer: Timer::new(Duration::from_secs_f32(0.1), TimerMode::Repeating),
         }
     }
