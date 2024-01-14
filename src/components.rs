@@ -2,7 +2,6 @@
 
 use bevy::prelude::{Bundle, Component, SpriteSheetBundle, Timer, TimerMode};
 use bevy_ecs_ldtk::{GridCoords, LdtkEntity, LdtkIntCell};
-use bevy_rapier2d::prelude::*;
 
 use crate::constants::*;
 
@@ -57,19 +56,7 @@ pub struct Wall;
 
 /// Bundle for creating a wall entity.
 /// Groups all necessary components for a wall entity, primarily used for collision detection.
-#[derive(Bundle, LdtkIntCell)]
+#[derive(Default, Bundle, LdtkIntCell)]
 pub struct WallBundle {
     pub wall: Wall,
-    pub rigid_body: RigidBody,
-    pub collider: Collider,
-}
-
-impl Default for WallBundle {
-    fn default() -> Self {
-        WallBundle {
-            wall: Default::default(),
-            rigid_body: RigidBody::Fixed, // Walls are static
-            collider: Collider::cuboid(WALL_SPRITE_WIDTH / 2.0, WALL_SPRITE_HEIGHT / 2.0),
-        }
-    }
 }

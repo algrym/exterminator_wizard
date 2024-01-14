@@ -2,6 +2,7 @@ use std::collections::HashSet;
 
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
+use bevy_rapier2d::prelude::*;
 
 use crate::components::*;
 use crate::constants::*;
@@ -12,7 +13,7 @@ impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app.register_ldtk_int_cell::<WallBundle>(1)
             .init_resource::<LevelWalls>()
-            .add_systems(Update, cache_wall_locations);
+            .add_systems(Update, (setup_wall_colliders, cache_wall_locations));
     }
 }
 
@@ -71,6 +72,39 @@ fn cache_wall_locations(
 
             *level_walls = new_level_walls;
         }
+    }
+}
+
+/// Sets up collision components for newly added wall entities.
+///
+/// This system is designed to run for each entity that has a `Wall` component,
+/// but not a `Collider` component. It triggers only when a `Wall` component is newly added
+/// to an entity. The system adds a `Collider` component to these entities to handle
+/// physical interactions in the game world. Additionally, a `RigidBody::Fixed` component
+/// is added to ensure that the walls are stationary and do not move in response to collisions.
+///
+/// The `Collider` is a cuboid with dimensions based on the wall sprite's width and height,
+/// providing an accurate collision area that matches the wall's visual representation.
+///
+/// # Arguments
+/// * `commands` - Provides the functionality to perform various operations on entities,
+///   such as adding or removing components.
+/// * `query` - Query that selects wall entities requiring collider components.
+///
+#[allow(clippy::type_complexity)]
+fn setup_wall_colliders(
+    mut commands: Commands,
+    query: Query<Entity, (With<Wall>, Without<Collider>, Added<Wall>)>,
+) {
+    for entity in query.iter() {
+        info!("Adding collision to wall entity: {:?}", entity);
+        commands
+            .entity(entity)
+            .insert(Collider::cuboid(
+                WALL_SPRITE_WIDTH / 2.0,
+                WALL_SPRITE_HEIGHT / 2.0,
+            ))
+            .insert(RigidBody::Fixed);
     }
 }
 
