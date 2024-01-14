@@ -41,10 +41,6 @@ impl Plugin for PlayerPlugin {
 /// * `commands` - Used to perform commands on entities such as adding components.
 /// * `query` - Query to select entities that are players and require an animation component.
 ///
-/// # Example
-/// ```
-/// setup_player_animation(commands, query);
-/// ```
 #[allow(clippy::type_complexity)]
 fn setup_player_animation(
     mut commands: Commands,
@@ -70,10 +66,6 @@ fn setup_player_animation(
 /// * `commands` - Used to perform commands on entities such as adding components.
 /// * `query` - Query to select entities that are players and require a collider component.
 ///
-/// # Example
-/// ```
-/// setup_player_collision(commands, query);
-/// ```
 #[allow(clippy::type_complexity)]
 fn setup_player_collision(
     mut commands: Commands,
@@ -100,6 +92,7 @@ fn setup_player_collision(
 /// * `camera_query` - Query to access and update the camera's transform.
 /// * `input_res` - Resource to get the current input state.
 /// * `level_walls` - Resource containing information about wall locations in the level.
+///
 fn move_player_from_input(
     mut player_query: Query<
         (&mut Transform, &mut TextureAtlasSprite, &mut GridCoords),
