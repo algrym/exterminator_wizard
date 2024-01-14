@@ -39,4 +39,4 @@ pub const PLAYER_SPRITE_FRAMES: [usize; 9] = [136, 137, 138, 139, 140, 141, 142,
 
 /// Speed of the player sprite animation.
 /// This value determines the delay between player sprite animation frames.
-pub const PLAYER_SPRITE_ANIMATION_SPEED: f32 = 0.1;
+pub const SPRITE_ANIMATION_SPEED: f32 = 0.1;

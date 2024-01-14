@@ -31,6 +31,21 @@ impl Plugin for PlayerPlugin {
     }
 }
 
+/// Sets up the animation component for newly added player entities.
+///
+/// This system runs for each entity that has a `Player` component but not an `Animation` component.
+/// It is triggered only when a `Player` component is newly added to an entity.
+/// The system adds an `Animation` component with predefined frames to these entities.
+///
+/// # Arguments
+/// * `commands` - Used to perform commands on entities such as adding components.
+/// * `query` - Query to select entities that are players and require an animation component.
+///
+/// # Example
+/// ```
+/// setup_player_animation(commands, query);
+/// ```
+#[allow(clippy::type_complexity)]
 fn setup_player_animation(
     mut commands: Commands,
     query: Query<Entity, (With<Player>, Without<Animation>, Added<Player>)>,
@@ -44,6 +59,22 @@ fn setup_player_animation(
     }
 }
 
+/// Sets up the collision component for newly added player entities.
+///
+/// This system adds a `Collider` component to entities that have a `Player` component
+/// but do not yet have a `Collider`. It is triggered only when a `Player` component
+/// is newly added to an entity. The collider is a cuboid shaped based on the player sprite's
+/// width and height, ensuring the collision area accurately matches the player's visual representation.
+///
+/// # Arguments
+/// * `commands` - Used to perform commands on entities such as adding components.
+/// * `query` - Query to select entities that are players and require a collider component.
+///
+/// # Example
+/// ```
+/// setup_player_collision(commands, query);
+/// ```
+#[allow(clippy::type_complexity)]
 fn setup_player_collision(
     mut commands: Commands,
     query: Query<Entity, (With<Player>, Without<Collider>, Added<Player>)>,

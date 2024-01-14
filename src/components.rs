@@ -32,30 +32,20 @@ impl Default for Animation {
     fn default() -> Self {
         Animation {
             frames: Default::default(),
-            timer: Timer::from_seconds(PLAYER_SPRITE_ANIMATION_SPEED, TimerMode::Repeating),
+            timer: Timer::from_seconds(SPRITE_ANIMATION_SPEED, TimerMode::Repeating),
         }
     }
 }
 
 /// Bundle for creating a player entity.
 /// Groups all necessary components for a player entity, including sprite, grid position, and animation.
-#[derive(Bundle, LdtkEntity)]
+#[derive(Bundle, LdtkEntity, Default)]
 pub struct PlayerBundle {
     pub player: Player,
     #[sprite_sheet_bundle]
     pub sprite_bundle: SpriteSheetBundle,
     #[grid_coords]
     pub grid_coords: GridCoords,
-}
-
-impl Default for PlayerBundle {
-    fn default() -> Self {
-        PlayerBundle {
-            player: Default::default(),
-            sprite_bundle: Default::default(),
-            grid_coords: Default::default(),
-        }
-    }
 }
 
 /// Plugin responsible for adding map-related systems to the game.
