@@ -1,8 +1,11 @@
 // player.rs
 
 use bevy::prelude::*;
+use bevy::time::common_conditions::on_timer;
+use bevy::utils::Duration;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_ecs_ldtk::utils::translation_to_grid_coords;
+use bevy_rapier2d::prelude::Collider;
 
 use crate::components::*;
 use crate::constants::*;
@@ -14,8 +17,15 @@ use crate::util::convert_vec3_to_vec2;
 /// and animating the player sprite.
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (move_player_from_input, animate_player, dbg_player))
-            .register_ldtk_entity::<PlayerBundle>("Player");
+        app.add_systems(
+            Update,
+            (
+                move_player_from_input,
+                animate_player,
+                dbg_player.run_if(on_timer(Duration::from_secs(1))),
+            ),
+        )
+        .register_ldtk_entity::<PlayerBundle>("Player");
     }
 }
 
@@ -124,11 +134,11 @@ fn animate_player(
     }
 }
 
-pub fn dbg_player(input_res: Res<Input<KeyCode>>, mut query: Query<(&EntityInstance, &Player)>) {
-    if input_res.pressed(KeyCode::P) {
-        for (entity_instance, player) in &mut query {
-            dbg!("{:?}", &entity_instance);
-            dbg!("{:?}", &player);
-        }
+pub fn dbg_player(mut query: Query<(&Transform, &GridCoords, &Collider, &Player)>) {
+    for (transform, grid_coords, collider, _player) in &mut query {
+        info!(
+            "loc@{:?}=({},{}) collider={:?}",
+            &transform.translation, &grid_coords.x, &grid_coords.y, &collider
+        );
     }
 }
