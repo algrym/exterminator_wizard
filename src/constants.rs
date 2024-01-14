@@ -36,3 +36,7 @@ pub const PLAYER_SPRITE_SPEED: f32 = 100.0;
 /// This is the list of frame indexes that will be iterated through to show animation.
 /// TODO: PLAYER_SPRITE_FRAMES needs to be loaded from the LDTK player entity metadata.
 pub const PLAYER_SPRITE_FRAMES: [usize; 9] = [136, 137, 138, 139, 140, 141, 142, 143, 144];
+
+/// Speed of the player sprite animation.
+/// This value determines the delay between player sprite animation frames.
+pub const PLAYER_SPRITE_ANIMATION_SPEED: f32 = 0.1;

@@ -23,9 +23,37 @@ impl Plugin for PlayerPlugin {
                 move_player_from_input,
                 animate_player,
                 dbg_player.run_if(on_timer(Duration::from_secs(1))),
+                setup_player_animation,
+                setup_player_collision,
             ),
         )
         .register_ldtk_entity::<PlayerBundle>("Player");
+    }
+}
+
+fn setup_player_animation(
+    mut commands: Commands,
+    query: Query<Entity, (With<Player>, Without<Animation>, Added<Player>)>,
+) {
+    for entity in query.iter() {
+        info!("Adding animation to player entity: {:?}", entity);
+        commands.entity(entity).insert(Animation {
+            frames: PLAYER_SPRITE_FRAMES.to_vec(),
+            ..default()
+        });
+    }
+}
+
+fn setup_player_collision(
+    mut commands: Commands,
+    query: Query<Entity, (With<Player>, Without<Collider>, Added<Player>)>,
+) {
+    for entity in query.iter() {
+        info!("Adding collision to player entity: {:?}", entity);
+        commands.entity(entity).insert(Collider::cuboid(
+            PLAYER_SPRITE_WIDTH / 2.0,
+            PLAYER_SPRITE_HEIGHT / 2.0,
+        ));
     }
 }
 

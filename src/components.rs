@@ -1,9 +1,6 @@
 // components.rs
 
-use std::time::Duration;
-
-use bevy::prelude::{Bundle, Component, SpriteSheetBundle, Timer};
-use bevy::time::TimerMode;
+use bevy::prelude::{Bundle, Component, SpriteSheetBundle, Timer, TimerMode};
 use bevy_ecs_ldtk::{GridCoords, LdtkEntity, LdtkIntCell};
 use bevy_rapier2d::prelude::*;
 
@@ -29,12 +26,13 @@ pub struct Animation {
     pub timer: Timer,
 }
 
+/// Bundle for creating an animation component.
+/// Groups all necessary components for an animation component, including the list of frames and the timer.
 impl Default for Animation {
-    /// Provides a default set of frames and a timer for the animation.
     fn default() -> Self {
         Animation {
-            frames: PLAYER_SPRITE_FRAMES.to_vec(),
-            timer: Timer::new(Duration::from_secs_f32(0.1), TimerMode::Repeating),
+            frames: Default::default(),
+            timer: Timer::from_seconds(PLAYER_SPRITE_ANIMATION_SPEED, TimerMode::Repeating),
         }
     }
 }
@@ -48,9 +46,6 @@ pub struct PlayerBundle {
     pub sprite_bundle: SpriteSheetBundle,
     #[grid_coords]
     pub grid_coords: GridCoords,
-    pub animation: Animation,
-    pub rigid_body: RigidBody,
-    pub collider: Collider,
 }
 
 impl Default for PlayerBundle {
@@ -59,9 +54,6 @@ impl Default for PlayerBundle {
             player: Default::default(),
             sprite_bundle: Default::default(),
             grid_coords: Default::default(),
-            animation: Default::default(),
-            rigid_body: RigidBody::Dynamic, // Makes the player affected by physics
-            collider: Collider::cuboid(PLAYER_SPRITE_WIDTH / 2.0, PLAYER_SPRITE_HEIGHT / 2.0),
         }
     }
 }
