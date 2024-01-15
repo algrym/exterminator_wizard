@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
 use bevy::prelude::*;
+use bevy::utils::HashMap;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -95,7 +96,7 @@ fn cache_wall_locations(
 /// * `query` - Query that selects wall entities requiring collider components.
 ///
 #[allow(clippy::type_complexity)]
-fn setup_wall_colliders(
+fn _naive_setup_wall_colliders(
     mut commands: Commands,
     query: Query<Entity, (With<Wall>, Without<Collider>, Added<Wall>)>,
 ) {
@@ -113,6 +114,99 @@ fn setup_wall_colliders(
     }
     if query.iter().count() > 0 {
         info!("built {} colliders via naïve method", query.iter().count());
+    }
+}
+
+pub fn setup_wall_colliders(
+    mut _commands: Commands,
+    wall_query: Query<(&GridCoords, &Parent), Added<Wall>>,
+    parent_query: Query<&Parent, Without<Wall>>,
+) {
+    /// Represents a wide wall that is 1 tile tall
+    /// Used to spawn wall collisions
+    #[derive(Clone, Eq, PartialEq, Debug, Default, Hash)]
+    struct Plate {
+        left: i32,
+        right: i32,
+    }
+
+    /// A simple rectangle type representing a wall of any size
+    struct _Rect {
+        left: i32,
+        right: i32,
+        top: i32,
+        bottom: i32,
+    }
+
+    // Consider where the walls are
+    // storing them as GridCoords in a HashSet for quick, easy lookup
+    //
+    // The key of this map will be the entity of the level the wall belongs to.
+    // This has two consequences in the resulting collision entities:
+    // 1. it forces the walls to be split along level boundaries
+    // 2. it lets us easily add the collision entities as children of the appropriate level entity
+    let mut level_to_wall_locations: HashMap<Entity, HashSet<GridCoords>> = HashMap::new();
+
+    wall_query.for_each(|(&grid_coords, parent)| {
+        // An intgrid tile's direct parent will be a layer entity, not the level entity
+        // To get the level entity, you need the tile's grandparent.
+        // This is where parent_query comes in.
+        if let Ok(grandparent) = parent_query.get(parent.get()) {
+            level_to_wall_locations
+                .entry(grandparent.get())
+                .or_default()
+                .insert(grid_coords);
+        }
+    });
+
+    if !wall_query.is_empty() {
+        // check each tile and join it with its neighbor if they match
+        // this will result in a list of plates, which are wide walls that are 1 tile tall
+        let mut plates: HashSet<Plate> = HashSet::new();
+        for (&level_entity, wall_locations) in level_to_wall_locations.iter() {
+            let mut level_width = 0;
+            let mut level_height = 0;
+            for wall_location in wall_locations.iter() {
+                level_width = level_width.max(wall_location.x);
+                level_height = level_height.max(wall_location.y);
+            }
+
+            for y in 0..=level_height {
+                let mut left = None;
+                let mut right = None;
+                for x in 0..=level_width {
+                    let grid_coords = GridCoords::new(x, y);
+                    if wall_locations.contains(&grid_coords) {
+                        if left.is_none() {
+                            left = Some(x);
+                        }
+                        right = Some(x);
+                    } else {
+                        if let (Some(left), Some(right)) = (left, right) {
+                            plates.insert(Plate { left, right });
+                        }
+                        left = None;
+                        right = None;
+                    }
+                }
+                if let (Some(left), Some(right)) = (left, right) {
+                    plates.insert(Plate { left, right });
+                }
+            }
+            // log the count of colliders vs original
+            info!(
+                "built {} (down from {}={:.2}%) colliders via plate method",
+                plates.len() * 2,
+                wall_locations.len(),
+                ((plates.len() as f32 * 2.0) / wall_locations.len() as f32) * 100.0
+            );
+
+            // Placeholder so we don't forget
+            info!(
+                "TODO: placeholder level_entity={:?} ({},{})",
+                level_entity, WALL_SPRITE_WIDTH, WALL_SPRITE_HEIGHT
+            );
+        }
     }
 }
 
