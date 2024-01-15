@@ -5,7 +5,7 @@ use bevy::time::common_conditions::on_timer;
 use bevy::utils::Duration;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_ecs_ldtk::utils::translation_to_grid_coords;
-use bevy_rapier2d::prelude::Collider;
+use bevy_rapier2d::prelude::*;
 
 use crate::components::*;
 use crate::constants::*;
@@ -73,10 +73,16 @@ fn setup_player_collision(
 ) {
     for entity in query.iter() {
         info!("Adding collision to player entity: {:?}", entity);
-        commands.entity(entity).insert(Collider::cuboid(
-            PLAYER_SPRITE_WIDTH / 2.0,
-            PLAYER_SPRITE_HEIGHT / 2.0,
-        ));
+        commands
+            .entity(entity)
+            .insert(Collider::cuboid(
+                PLAYER_SPRITE_WIDTH / 2.0,
+                PLAYER_SPRITE_HEIGHT / 2.0,
+            ))
+            .insert(ActiveEvents::COLLISION_EVENTS)
+            .insert(Sleeping::disabled())
+            .insert(Ccd::enabled())
+            .insert(Name::new("Player"));
     }
 }
 

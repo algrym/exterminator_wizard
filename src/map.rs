@@ -13,7 +13,10 @@ impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app.register_ldtk_int_cell::<WallBundle>(1)
             .init_resource::<LevelWalls>()
-            .add_systems(Update, (setup_wall_colliders, cache_wall_locations));
+            .add_systems(
+                Update,
+                (setup_wall_colliders, cache_wall_locations, display_events),
+            );
     }
 }
 
@@ -97,14 +100,33 @@ fn setup_wall_colliders(
     query: Query<Entity, (With<Wall>, Without<Collider>, Added<Wall>)>,
 ) {
     for entity in query.iter() {
-        info!("Adding collision to wall entity: {:?}", entity);
         commands
             .entity(entity)
             .insert(Collider::cuboid(
                 WALL_SPRITE_WIDTH / 2.0,
                 WALL_SPRITE_HEIGHT / 2.0,
             ))
+            .insert(ActiveEvents::COLLISION_EVENTS)
+            .insert(Ccd::enabled())
+            .insert(Name::new(format!("Wall {:?}", entity)))
             .insert(RigidBody::Fixed);
+    }
+    if query.iter().count() > 0 {
+        info!("built {} colliders via naïve method", query.iter().count());
+    }
+}
+
+/* A system that displays the events. */
+fn display_events(
+    mut collision_events: EventReader<CollisionEvent>,
+    mut contact_force_events: EventReader<ContactForceEvent>,
+) {
+    for collision_event in collision_events.iter() {
+        println!("Received collision event: {:?}", collision_event);
+    }
+
+    for contact_force_event in contact_force_events.iter() {
+        println!("Received contact force event: {:?}", contact_force_event);
     }
 }
 
