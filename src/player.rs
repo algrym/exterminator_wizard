@@ -80,6 +80,7 @@ fn setup_player_collision(
                 PLAYER_SPRITE_HEIGHT / 2.0,
             ))
             .insert(ActiveEvents::COLLISION_EVENTS)
+            .insert(KinematicCharacterController::default())
             .insert(Sleeping::disabled())
             .insert(Ccd::enabled())
             .insert(Name::new("Player"));
