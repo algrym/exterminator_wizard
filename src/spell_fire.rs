@@ -13,56 +13,11 @@ impl Plugin for SpellFirePlugin {
         app.add_systems(
             Update,
             (
-                animate_spell_fire,
-                setup_spell_fire_animation,
                 setup_spell_fire_collision,
                 spawn_spell_fire_from_input,
                 dbg_spell_fire.run_if(on_timer(Duration::from_secs(1))),
             ),
         );
-    }
-}
-
-/// Sets up the animation component for any added spellfire entities.
-///
-/// This system runs for each entity that has a `spellfire` component but not an `Animation` component.
-/// It is triggered only when a `spellfire` component is newly added to an entity.
-/// The system adds an `Animation` component with predefined frames to these entities.
-///
-/// # Arguments
-/// * `commands` - Used to perform commands on entities such as adding components.
-/// * `query` - Query to select entities that are spellfires and require an animation component.
-///
-#[allow(clippy::type_complexity)]
-fn setup_spell_fire_animation(
-    mut commands: Commands,
-    query: Query<Entity, (With<SpellFire>, Without<Animation>, Added<SpellFire>)>,
-) {
-    for entity in query.iter() {
-        info!("Adding animation to spellfire entity: {:?}", entity);
-        commands.entity(entity).insert(Animation {
-            frames: SPELL_FIRE_SPRITE_FRAMES.to_vec(),
-            ..default()
-        });
-    }
-}
-
-fn animate_spell_fire(
-    time: Res<Time>,
-    mut query: Query<(&mut Animation, &mut TextureAtlasSprite), With<SpellFire>>,
-) {
-    for (mut animation, mut sprite) in query.iter_mut() {
-        animation.timer.tick(time.delta());
-        if animation.timer.finished() {
-            let next_frame = (animation
-                .frames
-                .iter()
-                .position(|&frame| frame == sprite.index)
-                .unwrap_or(0)
-                + 1)
-                % animation.frames.len();
-            sprite.index = animation.frames[next_frame];
-        }
     }
 }
 
