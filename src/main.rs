@@ -19,6 +19,7 @@ mod components;
 mod constants;
 mod map;
 mod player;
+mod spell_fire;
 mod util;
 
 /// This function is the entry point of the "Exterminator Wizard" game.
@@ -43,6 +44,7 @@ fn main() {
                 .set(ImagePlugin::default_nearest()),
             LdtkPlugin,
             PlayerPlugin,
+            SpellFirePlugin,
             MapPlugin,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(GRID_SIZE as f32),
             RapierDebugRenderPlugin::default(),

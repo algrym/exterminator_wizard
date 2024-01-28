@@ -38,7 +38,7 @@ impl Default for Animation {
 
 /// Bundle for creating a player entity.
 /// Groups all necessary components for a player entity, including sprite, grid position, and animation.
-#[derive(Bundle, LdtkEntity, Default)]
+#[derive(Default, Bundle, LdtkEntity)]
 pub struct PlayerBundle {
     pub player: Player,
     #[sprite_sheet_bundle]
@@ -60,3 +60,11 @@ pub struct Wall;
 pub struct WallBundle {
     pub wall: Wall,
 }
+
+/// Plugin responsible for adding spell_fire-related systems to the game.
+pub struct SpellFirePlugin;
+
+/// Component representing a Spell Fire entity.
+/// This component is used to identify and interact with spell_fire entities in the game world.
+#[derive(Default, Component, Debug)]
+pub struct SpellFire;
