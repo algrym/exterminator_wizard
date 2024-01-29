@@ -1,15 +1,16 @@
 // main.rs
 // github.com/algrym/exterminator_wizard
 
+use bevy::diagnostic::{
+    FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin, SystemInformationDiagnosticsPlugin,
+};
 use bevy::{
     core_pipeline::{
         bloom::BloomSettings, clear_color::ClearColorConfig, tonemapping::Tonemapping,
     },
     input::common_conditions::input_toggle_active,
     prelude::*,
-};
-use bevy::diagnostic::{
-    FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin, SystemInformationDiagnosticsPlugin,
+    render::{render_resource::WgpuFeatures, settings::WgpuSettings, RenderPlugin},
 };
 use bevy_ecs_ldtk::prelude::*;
 use bevy_hanabi::prelude::*;
@@ -29,6 +30,11 @@ mod util;
 
 /// This function is the entry point of the "Exterminator Wizard" game.
 fn main() {
+    let mut wgpu_settings = WgpuSettings::default();
+    wgpu_settings
+        .features
+        .set(WgpuFeatures::VERTEX_WRITABLE_STORAGE, true);
+
     let primary_window = Window {
         title: format!(
             "Exterminator Wizard v{} - ajw@ajw.io",
@@ -42,6 +48,7 @@ fn main() {
     App::new()
         .add_plugins((
             DefaultPlugins
+                .set(RenderPlugin { wgpu_settings })
                 .set(WindowPlugin {
                     primary_window: Some(primary_window),
                     ..default()
@@ -85,7 +92,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     camera.camera.hdr = true;
     camera.tonemapping = Tonemapping::default();
 
-    info!("spawn camera@{:?}", camera.transform.translation);
+    info!("spawn {:?}", camera.camera);
     commands.spawn((camera, BloomSettings::default()));
 
     commands.spawn(LdtkWorldBundle {
