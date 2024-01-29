@@ -1,13 +1,18 @@
 // main.rs
 // github.com/algrym/exterminator_wizard
 
-use bevy::core_pipeline::clear_color::ClearColorConfig;
+use bevy::{
+    core_pipeline::{
+        bloom::BloomSettings, clear_color::ClearColorConfig, tonemapping::Tonemapping,
+    },
+    input::common_conditions::input_toggle_active,
+    prelude::*,
+};
 use bevy::diagnostic::{
     FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin, SystemInformationDiagnosticsPlugin,
 };
-use bevy::input::common_conditions::input_toggle_active;
-use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
+use bevy_hanabi::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier2d::prelude::*;
 
@@ -45,6 +50,7 @@ fn main() {
             LdtkPlugin,
             PlayerPlugin,
             SpellFirePlugin,
+            HanabiPlugin,
             MapPlugin,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(GRID_SIZE as f32),
             RapierDebugRenderPlugin::default(),
@@ -76,9 +82,11 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut camera = Camera2dBundle::default();
     camera.projection.scale = CAMERA_SCALE;
     camera.camera_2d.clear_color = ClearColorConfig::Custom(Color::BLACK);
+    camera.camera.hdr = true;
+    camera.tonemapping = Tonemapping::default();
 
     info!("spawn camera@{:?}", camera.transform.translation);
-    commands.spawn(camera);
+    commands.spawn((camera, BloomSettings::default()));
 
     commands.spawn(LdtkWorldBundle {
         ldtk_handle: asset_server.load(MAP_FILENAME),
