@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 bevy = { version = "0.11", features = ["dynamic_linking"] }
-bevy_ecs_ldtk = "0.8"
+bevy_ecs_ldtk = "0.9"
 bevy_rapier2d = { version = "0.22", features = [ "simd-stable", "parallel", "debug-render-2d" ] }
 bevy-inspector-egui = "0.20"
 bevy_hanabi = { version = "0.7", default-features = false, features = [ "2d" ] }
